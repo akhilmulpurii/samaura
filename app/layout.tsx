@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist_Mono, Poppins, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { SidebarInset } from "@/components/ui/sidebar";
 import { SettingsProvider } from "@/contexts/settings-context";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";

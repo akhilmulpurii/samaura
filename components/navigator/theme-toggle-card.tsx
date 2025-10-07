@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sun, Moon, Monitor } from "lucide-react";
 
 interface ThemeToggleCardProps {
@@ -51,7 +51,7 @@ export const ThemeToggleCard: React.FC<ThemeToggleCardProps> = ({
                 </p>
               </div>
             </div>
-            
+
             <div className="mt-3">
               <Tabs value={theme} onValueChange={handleThemeChange}>
                 <TabsList className="grid w-full grid-cols-3">

@@ -14,7 +14,6 @@ import { MediaCard } from "@/components/media-card";
 import { MediaSection } from "@/components/media-section";
 import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background";
 import { VibrantLogo } from "@/components/vibrant-logo";
-import { VibrantBackdrop } from "@/components/vibrant-backdrop";
 import { RottenTomatoesIcon } from "@/components/icons/rotten-tomatoes";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { Star } from "lucide-react";
@@ -162,14 +161,16 @@ export default async function Show({
                 </div>
                 <MediaActions movie={show} />
 
-                {show.Taglines && show.Taglines.length > 0 && show.Taglines[0] && (
-                  <TextScramble
-                    className="text-lg text-muted-foreground mb-4 max-w-4xl text-center md:text-left font-poppins drop-shadow-md"
-                    duration={1.2}
-                  >
-                    {show.Taglines[0]}
-                  </TextScramble>
-                )}
+                {show.Taglines &&
+                  show.Taglines.length > 0 &&
+                  show.Taglines[0] && (
+                    <TextScramble
+                      className="text-lg text-muted-foreground mb-4 max-w-4xl text-center md:text-left font-poppins drop-shadow-md"
+                      duration={1.2}
+                    >
+                      {show.Taglines[0]}
+                    </TextScramble>
+                  )}
 
                 <p className="text-md leading-relaxed mb-6 max-w-4xl">
                   {show.Overview}

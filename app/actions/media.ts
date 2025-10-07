@@ -1,16 +1,12 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Jellyfin } from "@jellyfin/sdk";
-import { Api } from "@jellyfin/sdk/lib/api";
-import { ItemsApi } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models/base-item-dto";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models/base-item-kind";
 import { ItemFields } from "@jellyfin/sdk/lib/generated-client/models/item-fields";
 import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models/item-sort-by";
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client/models/sort-order";
 import { UserLibraryApi } from "@jellyfin/sdk/lib/generated-client/api/user-library-api";
-import { LibraryApi } from "@jellyfin/sdk/lib/generated-client/api/library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
@@ -74,7 +70,6 @@ export async function fetchMovies(
     const api = jellyfinInstance.createApi(serverUrl);
     api.accessToken = user.AccessToken;
 
-
     const { data } = await getItemsApi(api).getItems({
       userId: user.Id,
       includeItemTypes: [BaseItemKind.Movie],
@@ -95,7 +90,6 @@ export async function fetchMovies(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -137,7 +131,6 @@ export async function fetchTVShows(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -169,7 +162,6 @@ export async function fetchMediaDetails(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -201,7 +193,6 @@ export async function fetchPersonDetails(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -242,7 +233,6 @@ export async function fetchPersonFilmography(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -422,7 +412,6 @@ export async function fetchLibraryItems(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -447,14 +436,12 @@ export async function fetchSimilarItems(itemId: string, limit: number = 12) {
       limit,
     });
 
-
     return data.Items || [];
   } catch (error) {
     console.error("Failed to fetch library items:", error);
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -497,7 +484,6 @@ export async function fetchIntroOutro(
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -536,7 +522,6 @@ export async function scanLibrary(libraryId?: string): Promise<void> {
     console.error("Failed to scan library:", error);
 
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -564,7 +549,6 @@ export async function fetchGenres() {
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );
@@ -593,7 +577,6 @@ export async function fetchGenre(genreName: string) {
 
     // If it's an authentication error, throw an error with a special flag
     if (isAuthError(error)) {
-
       const authError = new Error(
         "Authentication expired. Please sign in again."
       );

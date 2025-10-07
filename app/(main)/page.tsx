@@ -1,7 +1,6 @@
 import { fetchResumeItems, fetchLibraryItems } from "@/app/actions/media";
 import { getAuthData, getUserLibraries } from "@/app/actions/utils";
 import { AuthErrorHandler } from "@/app/components/auth-error-handler";
-import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background";
 import { MediaSection } from "@/components/media-section";
 import { SearchBar } from "@/components/search-component";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models/base-item-dto";

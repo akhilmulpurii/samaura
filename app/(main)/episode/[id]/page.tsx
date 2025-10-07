@@ -1,9 +1,5 @@
 import { fetchEpisodeDetails } from "@/app/actions/tv-shows";
-import {
-  getImageUrl,
-  fetchSimilarItems,
-  getServerUrl,
-} from "@/app/actions";
+import { getImageUrl, fetchSimilarItems, getServerUrl } from "@/app/actions";
 import { MediaActions } from "@/components/media-actions";
 import { SearchBar } from "@/components/search-component";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +8,6 @@ import { SeasonEpisodes } from "@/components/season-episodes";
 import { MediaSection } from "@/components/media-section";
 import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background";
 import { VibrantLogo } from "@/components/vibrant-logo";
-import { VibrantBackdrop } from "@/components/vibrant-backdrop";
 import { RottenTomatoesIcon } from "@/components/icons/rotten-tomatoes";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { Star, Play, TvIcon } from "lucide-react";
@@ -115,9 +110,7 @@ export default async function Episode({
               {/* TV Show Name and Season */}
               <div className="mb-4 flex justify-center md:justify-start">
                 <h2 className="text-sm font-medium text-muted-foreground md:pl-8 inline-flex items-center">
-                  <TvIcon
-                    className="w-3.5 h-3.5 mr-2 text-muted-foreground"
-                  />
+                  <TvIcon className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
                   <Link
                     href={`/series/${episode.SeriesId}`}
                     className="hover:underline"
@@ -146,7 +139,9 @@ export default async function Episode({
                   by="character"
                   once
                 >
-                  {`${episode.IndexNumber ? `${episode.IndexNumber}. ` : ""}${episode.Name || "Untitled Episode"}`}
+                  {`${episode.IndexNumber ? `${episode.IndexNumber}. ` : ""}${
+                    episode.Name || "Untitled Episode"
+                  }`}
                 </TextAnimate>
               </div>
 
