@@ -143,15 +143,15 @@ export function AppSidebar({
               <Link href="/">
                 <div className="text-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Image
-                    src="/logo/finetic.png"
-                    alt="Finetic Logo"
+                    src="/logo/samaura.png"
+                    alt="SamAura Logo"
                     width={32}
                     height={32}
                     className="rounded"
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Finetic</span>
+                  <span className="font-semibold">SamAura</span>
                   <span className="text-xs">
                     {serverUrl &&
                       new URL(serverUrl).hostname.replace(

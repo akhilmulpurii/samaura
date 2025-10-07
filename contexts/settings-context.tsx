@@ -33,7 +33,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    const savedBitrate = localStorage.getItem("finetic-video-bitrate");
+    const savedBitrate = localStorage.getItem("samaura-video-bitrate");
     if (
       savedBitrate &&
       BITRATE_OPTIONS.some((option) => option.value === savedBitrate)
@@ -45,7 +45,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Save to localStorage when states change
   const setVideoBitrate = (bitrate: string) => {
     setVideoBitrateState(bitrate);
-    localStorage.setItem("finetic-video-bitrate", bitrate);
+    localStorage.setItem("samaura-video-bitrate", bitrate);
   };
 
   return (

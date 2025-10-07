@@ -1,5 +1,5 @@
 {
-  "name": "finetic",
+  "name": "samaura",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -88,8 +88,8 @@
   "main": "electron/main.js",
   "homepage": "./",
   "build": {
-    "appId": "com.finetic.app",
-    "productName": "Finetic",
+    "appId": "com.samaura.app",
+    "productName": "samaura",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -99,7 +99,7 @@
       "package.json"
     ],
     "mac": {
-      "icon": "public/logo/desktop/finetic.png",
+      "icon": "public/logo/desktop/samaura.png",
       "category": "public.app-category.entertainment",
       "target": [
         {
@@ -112,11 +112,11 @@
       ]
     },
     "win": {
-      "icon": "public/logo/desktop/finetic.png",
+      "icon": "public/logo/desktop/samaura.png",
       "target": "nsis"
     },
     "linux": {
-      "icon": "public/logo/desktop/finetic.png",
+      "icon": "public/logo/desktop/samaura.png",
       "target": "AppImage"
     }
   }
