@@ -35,10 +35,6 @@ import {
   themeToggle,
 } from "./theme";
 
-import {
-  createSystemPrompt,
-} from "./system-prompt";
-
 // Export all media-related tools
 export {
   searchMedia,
@@ -78,11 +74,6 @@ export {
 // Export theme tools
 export {
   themeToggle,
-};
-
-// Export system prompt
-export {
-  createSystemPrompt,
 };
 
 // Factory function to create all tools with context

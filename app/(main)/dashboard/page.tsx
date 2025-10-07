@@ -1,25 +1,16 @@
-import { fetchLibraryItems, getLibraryById } from "@/app/actions";
 import {
   fetchScheduledTasks,
   getAuthData,
   fetchJellyfinLogs,
 } from "@/app/actions/utils";
-import { AuthErrorHandler } from "@/app/components/auth-error-handler";
-import Aurora from "@/components/Aurora/Aurora";
-import { LibraryMediaList } from "@/components/library-media-list";
 import { SearchBar } from "@/components/search-component";
-import LightRays from "@/components/LightRays/LightRays";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models/base-item-dto";
 import { BentoGrid, BentoItem } from "@/components/ui/bento-grid";
 import { Badge } from "@/components/ui/badge";
-import { TextShimmerWave } from "@/components/ui/text-shimmer-wave";
-import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
 import { LoaderPinwheel, FileText } from "lucide-react";
 import {
   getTaskIcon,
   getTaskIconProps,
 } from "@/lib/scheduled-task-icon-mapping";
-import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background";
 import { AuroraBackground } from "@/components/aurora-background";
 import { DataTable } from "@/components/logs/data-table";
 import { logColumns } from "@/components/logs/columns";

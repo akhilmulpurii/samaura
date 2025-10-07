@@ -11,7 +11,6 @@ import { CastScrollArea } from "@/components/cast-scrollarea";
 import { MediaSection } from "@/components/media-section";
 import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background";
 import { VibrantLogo } from "@/components/vibrant-logo";
-import { VibrantBackdrop } from "@/components/vibrant-backdrop";
 import { RottenTomatoesIcon } from "@/components/icons/rotten-tomatoes";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { Star } from "lucide-react";

@@ -58,11 +58,9 @@ import {
 import { fetchIntroOutro } from "@/app/actions/media";
 import { decode } from "blurhash";
 
-interface GlobalMediaPlayerProps {
-  onToggleAIAsk?: () => void;
-}
+interface GlobalMediaPlayerProps {}
 
-export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
+export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
   const {
     isPlayerVisible,
     setIsPlayerVisible,
@@ -90,11 +88,11 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
   const [loading, setLoading] = useState(false);
   const [videoStarted, setVideoStarted] = useState(false);
   const [fetchingSubtitles, setFetchingSubtitles] = useState(false);
-  
+
   // Backdrop image state
   const [backdropImageLoaded, setBackdropImageLoaded] = useState(false);
   const [blurDataUrl, setBlurDataUrl] = useState<string | null>(null);
-  
+
   const [currentSubtitle, setCurrentSubtitle] = useState<{
     text: string;
     positionTop: boolean;
@@ -387,9 +385,10 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
   useEffect(() => {
     if (mediaDetails && !blurDataUrl) {
       // Get blur hash for backdrop
-      const backdropImageTag = mediaDetails.Type === "Episode" 
-        ? mediaDetails.ParentBackdropImageTags?.[0]
-        : mediaDetails.BackdropImageTags?.[0];
+      const backdropImageTag =
+        mediaDetails.Type === "Episode"
+          ? mediaDetails.ParentBackdropImageTags?.[0]
+          : mediaDetails.BackdropImageTags?.[0];
       const blurHash =
         mediaDetails.ImageBlurHashes?.["Backdrop"]?.[backdropImageTag!] || "";
 
@@ -690,7 +689,7 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
                     }
                   />
                 )}
-                
+
                 {/* Actual backdrop image */}
                 <img
                   src={`${serverUrl}/Items/${
@@ -767,7 +766,9 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
                   >
                     {mediaDetails?.Type === "Episode" &&
                     mediaDetails?.IndexNumber
-                      ? `${mediaDetails.IndexNumber}. ${mediaDetails.Name || currentMedia.name}`
+                      ? `${mediaDetails.IndexNumber}. ${
+                          mediaDetails.Name || currentMedia.name
+                        }`
                       : mediaDetails?.Name || currentMedia.name}
                   </motion.h2>
 
@@ -895,7 +896,9 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
             <div className="flex items-center justify-between w-full">
               <h2 className="text-3xl font-semibold text-white truncate font-poppins">
                 {mediaDetails?.Type === "Episode" && mediaDetails?.IndexNumber
-                  ? `${mediaDetails.IndexNumber}. ${mediaDetails.Name || currentMedia.name}`
+                  ? `${mediaDetails.IndexNumber}. ${
+                      mediaDetails.Name || currentMedia.name
+                    }`
                   : mediaDetails?.Name || currentMedia.name}
               </h2>
 
@@ -944,19 +947,6 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
               <MediaPlayerTime />
             </div>
             <div className="flex items-center gap-2">
-              {/* Navigator button */}
-              {onToggleAIAsk && (
-                <MediaPlayerTooltip tooltip="Navigator" shortcut="Cmd + K">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20"
-                    onClick={onToggleAIAsk}
-                  >
-                    <Ship className="h-4 w-4" />
-                  </Button>
-                </MediaPlayerTooltip>
-              )}
               {/* People button with cast and crew popover */}
               {mediaDetails?.People && mediaDetails.People.length > 0 && (
                 <Popover>
@@ -999,7 +989,9 @@ export function GlobalMediaPlayer({ onToggleAIAsk }: GlobalMediaPlayerProps) {
                                 />
                               ) : null}
                               <div
-                                className={`w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs ${person.PrimaryImageTag ? "hidden" : ""}`}
+                                className={`w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs ${
+                                  person.PrimaryImageTag ? "hidden" : ""
+                                }`}
                               >
                                 {person.Name?.charAt(0) || "?"}
                               </div>

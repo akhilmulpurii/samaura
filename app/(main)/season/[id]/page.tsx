@@ -12,14 +12,11 @@ import { VibrantLogo } from "@/components/vibrant-logo";
 import { SeasonEpisodes } from "@/components/season-episodes";
 import { SeriesPlayButton } from "@/components/series-play-button";
 import { MediaSection } from "@/components/media-section";
-import { Star, Play, TvIcon } from "lucide-react";
+import { Star, TvIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { CastScrollArea } from "@/components/cast-scrollarea";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
-import { TextScramble } from "@/components/motion-primitives/text-scramble";
 import { BackdropImage } from "@/components/media-page/backdrop-image";
 import { PosterImage } from "@/components/media-page/poster-image";
 

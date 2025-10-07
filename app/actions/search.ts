@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { Jellyfin } from "@jellyfin/sdk";
 import { ItemsApi } from "@jellyfin/sdk/lib/generated-client/api/items-api";
 import { PersonsApi } from "@jellyfin/sdk/lib/generated-client/api/persons-api";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models/base-item-dto";
