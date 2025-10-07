@@ -15,11 +15,11 @@ function getDeviceId(): string {
 export function createJellyfinInstance() {
   return new Jellyfin({
     clientInfo: {
-      name: "Finetic",
+      name: "SamAura",
       version: "1.0.0",
     },
     deviceInfo: {
-      name: "Finetic Web Client",
+      name: "SamAura Web Client",
       id: getDeviceId(),
     },
   });
@@ -67,21 +67,28 @@ export const formatRuntime = (runTimeTicks?: number) => {
   return `${minutes}m`;
 };
 
-export const convertToWebVTT = (trackEvents: { TrackEvents: { Id: string; Text: string; StartPositionTicks: number; EndPositionTicks: number; }[] }): string => {
+export const convertToWebVTT = (trackEvents: {
+  TrackEvents: {
+    Id: string;
+    Text: string;
+    StartPositionTicks: number;
+    EndPositionTicks: number;
+  }[];
+}): string => {
   const convertTicksToTime = (ticks: number): string => {
     const totalSeconds = ticks / 10000000;
     const hours = Math.floor(totalSeconds / 3600)
       .toString()
-      .padStart(2, '0');
+      .padStart(2, "0");
     const minutes = Math.floor((totalSeconds % 3600) / 60)
       .toString()
-      .padStart(2, '0');
-    const seconds = (totalSeconds % 60).toFixed(3).padStart(6, '0');
+      .padStart(2, "0");
+    const seconds = (totalSeconds % 60).toFixed(3).padStart(6, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  let vtt = 'WEBVTT\n\n';
-  trackEvents.TrackEvents.forEach(event => {
+  let vtt = "WEBVTT\n\n";
+  trackEvents.TrackEvents.forEach((event) => {
     const start = convertTicksToTime(event.StartPositionTicks);
     const end = convertTicksToTime(event.EndPositionTicks);
     vtt += `${event.Id}\n${start} --> ${end}\n${event.Text}\n\n`;
@@ -91,8 +98,8 @@ export const convertToWebVTT = (trackEvents: { TrackEvents: { Id: string; Text: 
 
 // Convert timestamp string (HH:MM:SS or MM:SS) to seconds
 export const convertTimestampToSeconds = (timestamp: string): number => {
-  const parts = timestamp.split(':');
-  
+  const parts = timestamp.split(":");
+
   if (parts.length === 2) {
     // MM:SS format
     const minutes = parseInt(parts[0], 10);
@@ -105,7 +112,7 @@ export const convertTimestampToSeconds = (timestamp: string): number => {
     const seconds = parseFloat(parts[2]);
     return hours * 3600 + minutes * 60 + seconds;
   }
-  
+
   // If format is not recognized, try to parse as float (assume it's already in seconds)
   const parsed = parseFloat(timestamp);
   return isNaN(parsed) ? 0 : parsed;
@@ -117,9 +124,11 @@ export const formatPlaybackPosition = (ticks: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  
+
   if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
   }
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };

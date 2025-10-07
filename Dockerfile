@@ -1,4 +1,4 @@
-# Multi-stage build for Finetic
+# Multi-stage build for Samaura
 # Stage 1: Dependencies and build
 FROM node:18-alpine AS builder
 

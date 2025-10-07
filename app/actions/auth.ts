@@ -171,7 +171,7 @@ export async function authenticateUser(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Emby-Authorization": `MediaBrowser Client="Finetic", Device="Finetic Web Client", DeviceId="${getDeviceId()}", Version="1.0.0"`,
+          "X-Emby-Authorization": `MediaBrowser Client="SamAura", Device="SamAura Web Client", DeviceId="${getDeviceId()}", Version="1.0.0"`,
         },
         body: JSON.stringify({
           Username: username,
@@ -290,7 +290,7 @@ export async function debugServerConnection(): Promise<void> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `MediaBrowser Client="Finetic", Device="Finetic Web Client", DeviceId="${getDeviceId()}", Version="1.0.0"`,
+        Authorization: `MediaBrowser Client="SamAura", Device="SamAura Web Client", DeviceId="${getDeviceId()}", Version="1.0.0"`,
       },
       body: JSON.stringify({
         Username: "test",

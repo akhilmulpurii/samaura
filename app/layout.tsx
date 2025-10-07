@@ -24,7 +24,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Finetic",
+  title: "SamAura",
   description: "A modern web client for Jellyfin",
 };
 
@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <meta name="apple-mobile-web-app-title" content="Finetic" />
+      <meta name="apple-mobile-web-app-title" content="samaura" />
       <body
         className={`${inter.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
