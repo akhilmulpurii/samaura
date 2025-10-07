@@ -109,6 +109,10 @@ export function MediaCard({
     }
   };
 
+  const lightSpeedUrl = imageUrl?.includes("192.168.")
+    ? imageUrl
+    : "https://lightspeed.ac/?url=" + imageUrl;
+
   return (
     <div
       className={`cursor-pointer group overflow-hidden transition select-none ${
@@ -139,7 +143,7 @@ export function MediaCard({
               )}
               {/* Actual image */}
               <img
-                src={"https://lightspeed.ac/?url=" + imageUrl}
+                src={lightSpeedUrl}
                 alt={item.Name || ""}
                 className={`w-full h-full object-cover transition-opacity duration-300 shadow-lg shadow-sm group-hover:shadow-md ${
                   progressPercentage > 0 ? "rounded-t-md" : "rounded-md"
