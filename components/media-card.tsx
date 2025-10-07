@@ -35,6 +35,8 @@ export function MediaCard({
     linkHref = `/episode/${item.Id}`;
   } else if (item.Type === "Season") {
     linkHref = `/season/${item.Id}`;
+  } else if (item.Type === "BoxSet") {
+    linkHref = `/boxset/${item.Id}`;
   } else {
     linkHref = `/series/${item.Id}`;
   }
@@ -97,7 +99,7 @@ export function MediaCard({
     e.preventDefault();
     e.stopPropagation();
 
-    if (item) {
+    if (item && item.Type !== "BoxSet") {
       await playMedia({
         id: item.Id!,
         name: item.Name!,
@@ -168,20 +170,22 @@ export function MediaCard({
         </Link>
 
         {/* Play button overlay */}
-        <div
-          className={`absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none ${
-            progressPercentage > 0 ? "rounded-t-md" : "rounded-md"
-          }`}
-        >
-          <div className="invisible group-hover:visible transition-opacity duration-300 pointer-events-auto">
-            <button
-              onClick={handlePlayClick}
-              className="bg-white/20 backdrop-blur-sm rounded-full p-3 hover:bg-white/30 transition active:scale-[0.97] hover:cursor-pointer"
-            >
-              <Play className="h-6 w-6 text-white fill-white" />
-            </button>
+        {item?.Type !== "BoxSet" && (
+          <div
+            className={`absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center pointer-events-none ${
+              progressPercentage > 0 ? "rounded-t-md" : "rounded-md"
+            }`}
+          >
+            <div className="invisible group-hover:visible transition-opacity duration-300 pointer-events-auto">
+              <button
+                onClick={handlePlayClick}
+                className="bg-white/20 backdrop-blur-sm rounded-full p-3 hover:bg-white/30 transition active:scale-[0.97] hover:cursor-pointer"
+              >
+                <Play className="h-6 w-6 text-white fill-white" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Progress bar overlay at bottom of image */}
         {progressPercentage > 0 && (

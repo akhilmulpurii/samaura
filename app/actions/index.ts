@@ -7,7 +7,7 @@ export {
   logout,
   getUser,
   isAuthenticated,
-} from './auth';
+} from "./auth";
 
 // Media actions
 export {
@@ -23,7 +23,8 @@ export {
   fetchLibraryItems,
   fetchSimilarItems,
   scanLibrary,
-} from './media';
+  fetchMovieByCollection,
+} from "./media";
 
 // TV show actions
 export {
@@ -31,13 +32,10 @@ export {
   fetchEpisodes,
   fetchTVShowDetails,
   fetchEpisodeDetails,
-} from './tv-shows';
+} from "./tv-shows";
 
 // Search actions
-export {
-  searchItems,
-  searchPeople,
-} from './search';
+export { searchItems, searchPeople } from "./search";
 
 // Utility actions
 export {
@@ -53,7 +51,7 @@ export {
   reorderBackdropImage,
   deleteImage,
   getUserWithPolicy,
-} from './utils';
+} from "./utils";
 
 // Types
 export type {
@@ -62,4 +60,4 @@ export type {
   CurrentImage,
   UserPolicy,
   UserWithPolicy,
-} from './utils';
+} from "./utils";

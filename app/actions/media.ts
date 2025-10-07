@@ -100,6 +100,44 @@ export async function fetchMovies(
     return [];
   }
 }
+export async function fetchMovieByCollection(
+  collectionId: string
+): Promise<JellyfinItem[]> {
+  try {
+    const { serverUrl, user } = await getAuthData();
+    const jellyfinInstance = createJellyfinInstance();
+    const api = jellyfinInstance.createApi(serverUrl);
+    api.accessToken = user.AccessToken;
+
+    const { data } = await getItemsApi(api).getItems({
+      userId: user.Id,
+      includeItemTypes: [BaseItemKind.Movie],
+      recursive: true,
+      sortBy: [ItemSortBy.DateCreated],
+      sortOrder: [SortOrder.Descending],
+      parentId: collectionId,
+      fields: [
+        ItemFields.CanDelete,
+        ItemFields.PrimaryImageAspectRatio,
+        ItemFields.Overview,
+      ],
+    });
+    return data.Items || [];
+  } catch (error) {
+    console.error("Failed to fetch movies:", error);
+
+    // If it's an authentication error, throw an error with a special flag
+    if (isAuthError(error)) {
+      const authError = new Error(
+        "Authentication expired. Please sign in again."
+      );
+      (authError as any).isAuthError = true;
+      throw authError;
+    }
+
+    return [];
+  }
+}
 
 export async function fetchTVShows(
   limit: number = 20,
@@ -389,7 +427,11 @@ export async function fetchLibraryItems(
     const { data } = await getItemsApi(api).getItems({
       userId: user.Id,
       parentId: libraryId,
-      includeItemTypes: [BaseItemKind.Movie, BaseItemKind.Series],
+      includeItemTypes: [
+        BaseItemKind.Movie,
+        BaseItemKind.Series,
+        BaseItemKind.BoxSet,
+      ],
       recursive: true,
       sortBy: [ItemSortBy.SortName],
       sortOrder: [SortOrder.Ascending],

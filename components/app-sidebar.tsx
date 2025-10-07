@@ -45,6 +45,7 @@ import {
   BarChart3,
   MoreHorizontal,
   ChevronRight,
+  DiscAlbum,
 } from "lucide-react";
 import {
   Select,
@@ -116,6 +117,8 @@ export function AppSidebar({
         return <Film className="h-4 w-4" />;
       case "tvshows":
         return <Tv className="h-4 w-4" />;
+      case "boxsets":
+        return <DiscAlbum className="h-4 w-4" />;
       default:
         return <Film className="h-4 w-4" />; // Default to film icon for any edge cases
     }
@@ -125,7 +128,9 @@ export function AppSidebar({
     <Sidebar
       variant="floating"
       collapsible="icon"
-      className={`${isElectronMac && !isElectronFullscreen ? "pt-10" : ""} z-20`}
+      className={`${
+        isElectronMac && !isElectronFullscreen ? "pt-10" : ""
+      } z-20`}
     >
       <SidebarHeader>
         <SidebarMenu>
@@ -148,7 +153,11 @@ export function AppSidebar({
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Finetic</span>
                   <span className="text-xs">
-                    {serverUrl && new URL(serverUrl).hostname.replace(/^(jellyfin\.|www\.)/, '')}
+                    {serverUrl &&
+                      new URL(serverUrl).hostname.replace(
+                        /^(jellyfin\.|www\.)/,
+                        ""
+                      )}
                   </span>
                 </div>
               </Link>

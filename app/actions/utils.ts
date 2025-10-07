@@ -165,7 +165,7 @@ export async function getUserLibraries(): Promise<any[]> {
     // Filter for movie and TV show libraries only
     const supportedLibraries = (data.Items || []).filter((library: any) => {
       const type = library.CollectionType?.toLowerCase();
-      return type === "movies" || type === "tvshows";
+      return type === "movies" || type === "tvshows" || type === "boxsets";
     });
 
     return supportedLibraries;
