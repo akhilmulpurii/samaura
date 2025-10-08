@@ -6,6 +6,7 @@ import { getUserViewsApi } from "@jellyfin/sdk/lib/utils/api/user-views-api";
 import { createJellyfinInstance } from "@/lib/utils";
 import { getSystemApi } from "@jellyfin/sdk/lib/utils/api/system-api";
 import { LogFile } from "@jellyfin/sdk/lib/generated-client/models";
+import axios from "axios";
 
 // Helper function to get auth data from cookies
 export async function getAuthData() {
@@ -55,6 +56,29 @@ export async function getImageUrl(
   }
 
   return `${serverUrl}/Items/${itemId}/Images/${imageType}?${params.toString()}`;
+}
+
+export async function getLiveTVStreamUrl(
+  item_id: string
+): Promise<string | undefined> {
+  try {
+    const { serverUrl, user } = await getAuthData();
+    const playbackInfoUrl = `${serverUrl}/Items/${item_id}/PlaybackInfo?api_key=${user.AccessToken}`;
+    const playbackInfo = await axios.post(playbackInfoUrl);
+    if (
+      playbackInfo.data &&
+      playbackInfo.data.MediaSources &&
+      playbackInfo.data.MediaSources.length > 0 &&
+      playbackInfo.data.MediaSources[0].Path
+    ) {
+      const streamUrl = playbackInfo.data.MediaSources[0].Path;
+      return streamUrl;
+    } else {
+      throw new Error("No media sources found for live TV item");
+    }
+  } catch (error) {
+    console.error("Playback Info: ERROR", error);
+  }
 }
 
 export async function getUserImageUrl(itemId: string): Promise<string> {
@@ -178,12 +202,7 @@ export async function getUserLibraries(): Promise<any[]> {
     // Filter for movie and TV show libraries only
     const supportedLibraries = (data.Items || []).filter((library: any) => {
       const type = library.CollectionType?.toLowerCase();
-      return (
-        type === "movies" ||
-        type === "tvshows" ||
-        type === "boxsets" ||
-        type === "livetv"
-      );
+      return type === "movies" || type === "tvshows" || type === "boxsets";
     });
 
     return supportedLibraries;

@@ -33,6 +33,7 @@ import {
 import { useMediaPlayer } from "@/contexts/MediaPlayerContext";
 import {
   getStreamUrl,
+  getLiveTVStreamUrl,
   getSubtitleTracks,
   fetchMediaDetails,
   reportPlaybackStart,
@@ -458,13 +459,18 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
           (option) => option.value === videoBitrate
         );
         const bitrate = bitrateOption?.bitrate || 0; // 0 means auto/no limit
-        const streamUrl = await getStreamUrl(
-          currentMedia.id,
-          sourceToUse.Id!,
-          undefined,
-          bitrate
-        );
-        setStreamUrl(streamUrl);
+        if (details.Type == "TvChannel" && details.Id) {
+          const url = await getLiveTVStreamUrl(details.Id);
+          if (url) setStreamUrl(url);
+        } else {
+          const streamUrl = await getStreamUrl(
+            currentMedia.id,
+            sourceToUse.Id!,
+            undefined,
+            bitrate
+          );
+          setStreamUrl(streamUrl);
+        }
 
         // Start fetching subtitle data asynchronously without blocking playback
         const subtitleTracksList = await getSubtitleTracks(

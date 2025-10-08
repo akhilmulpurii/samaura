@@ -16,7 +16,7 @@ export const isElectronFullscreenAtom = atom((get) => {
 export interface MediaToPlay {
   id: string;
   name: string;
-  type: "Movie" | "Series" | "Episode";
+  type: "Movie" | "Series" | "Episode" | "TvChannel";
   resumePositionTicks?: number;
   selectedVersion?: MediaSourceInfo;
 }
@@ -24,7 +24,7 @@ export interface MediaToPlay {
 export interface CurrentMediaWithSource {
   id: string;
   name: string;
-  type: "Movie" | "Series" | "Episode";
+  type: "Movie" | "Series" | "Episode" | "TvChannel";
   mediaSourceId?: string | null;
 }
 

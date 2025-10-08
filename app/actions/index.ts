@@ -47,6 +47,7 @@ export {
   getSubtitleTracks,
   getUserLibraries,
   getLibraryById,
+  getLiveTVStreamUrl,
   fetchRemoteImages,
   downloadRemoteImage,
   fetchCurrentImages,

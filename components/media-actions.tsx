@@ -235,7 +235,11 @@ export function MediaActions({ movie, show, episode }: MediaActionsProps) {
               await playMedia({
                 id: media.Id!,
                 name: media.Name!,
-                type: media.Type as "Movie" | "Series" | "Episode",
+                type: media.Type as
+                  | "Movie"
+                  | "Series"
+                  | "Episode"
+                  | "TvChannel",
                 resumePositionTicks: media.UserData?.PlaybackPositionTicks,
                 selectedVersion: selectedVersion,
               });
