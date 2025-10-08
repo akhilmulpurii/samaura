@@ -74,14 +74,16 @@ export default async function Home() {
           />
         )}
 
-        {libraries.map(({ library, items }) => (
-          <MediaSection
-            key={library.Id}
-            sectionName={library.Name}
-            mediaItems={items}
-            serverUrl={serverUrl}
-          />
-        ))}
+        {libraries
+          .filter(({ library }) => library.CollectionType !== "livetv")
+          .map(({ library, items }) => (
+            <MediaSection
+              key={library.Id}
+              sectionName={library.Name}
+              mediaItems={items}
+              serverUrl={serverUrl}
+            />
+          ))}
       </div>
     </AuthErrorHandler>
   );
