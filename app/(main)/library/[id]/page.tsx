@@ -3,6 +3,27 @@ import { getAuthData } from "@/app/actions/utils";
 import { LibraryMediaList } from "@/components/library-media-list";
 import { SearchBar } from "@/components/search-component";
 import { ScanLibraryButton } from "@/components/scan-library-button";
+import { AuroraBackground } from "@/components/aurora-background";
+
+const AuroraColors = {
+  movies: ["#f87171", "#fb7185", "#f43f5e"],
+  boxsets: ["#34d399", "#10b981", "#059669"],
+  tvshows: ["#fbbf24", "#f59e0b", "#d97706"],
+  switch: ["#a78bfa", "#8b5cf6", "#7c3aed"],
+};
+
+function getAuroraColors(collectionType: string) {
+  switch (collectionType) {
+    case "movies":
+      return AuroraColors.movies;
+    case "boxsets":
+      return AuroraColors.boxsets;
+    case "tvshows":
+      return AuroraColors.tvshows;
+    default:
+      return AuroraColors.switch;
+  }
+}
 
 export default async function LibraryPage({
   params,
@@ -33,6 +54,11 @@ export default async function LibraryPage({
 
   return (
     <div className="relative px-4 py-6 max-w-full overflow-hidden">
+      <AuroraBackground
+        colorStops={getAuroraColors(libraryDetails.CollectionType || "")}
+        amplitude={0.5}
+        className="fixed inset-0 z-0 pointer-events-none opacity-40"
+      />
       {/* Main content with higher z-index */}
       <div className="relative z-10">
         <div className="relative z-[9999] mb-8">

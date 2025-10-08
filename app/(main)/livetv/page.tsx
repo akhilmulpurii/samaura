@@ -4,6 +4,7 @@ import { LibraryMediaList } from "@/components/library-media-list";
 import { SearchBar } from "@/components/search-component";
 import { ScanLibraryButton } from "@/components/scan-library-button";
 import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
+import { AuroraBackground } from "@/components/aurora-background";
 
 export default async function LiveTVPage({
   params,
@@ -22,6 +23,11 @@ export default async function LiveTVPage({
 
   return (
     <div className="relative px-4 py-6 max-w-full overflow-hidden">
+      <AuroraBackground
+        colorStops={["#a78bfa", "#8b5cf6", "#7c3aed"]}
+        amplitude={0.5}
+        className="fixed inset-0 z-0 pointer-events-none opacity-40"
+      />
       {/* Main content with higher z-index */}
       <div className="relative z-10">
         <div className="relative z-[9999] mb-8">
