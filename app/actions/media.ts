@@ -465,7 +465,9 @@ export async function fetchLibraryItems(
     return { items: [], totalRecordCount: 0 };
   }
 }
-export async function fetchLiveTVItems(isFavorite = undefined): Promise<{
+export async function fetchLiveTVItems(
+  isFavorite: boolean | undefined = undefined
+): Promise<{
   items: JellyfinItem[];
   totalRecordCount: number;
 }> {
