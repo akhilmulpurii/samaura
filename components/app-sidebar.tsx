@@ -29,7 +29,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUser, getServerUrl, logout, getUserLibraries } from "@/app/actions";
+import {
+  getUser,
+  getServerUrl,
+  logout,
+  getUserLibraries,
+  getUserImageUrl,
+} from "@/app/actions";
 import {
   Film,
   Tv,
@@ -42,19 +48,10 @@ import {
   Moon,
   Monitor,
   Settings2,
-  BarChart3,
-  MoreHorizontal,
   ChevronRight,
   DiscAlbum,
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useSettings, BITRATE_OPTIONS } from "@/contexts/settings-context";
+import { useSettings } from "@/contexts/settings-context";
 
 interface JellyfinLibrary {
   Id: string;
@@ -78,6 +75,7 @@ export function AppSidebar({
   const [serverUrl, setServerUrl] = useState<string | null>(null);
   const [libraries, setLibraries] = useState<JellyfinLibrary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +93,8 @@ export function AppSidebar({
         if (userData && serverUrlData) {
           const librariesData = await getUserLibraries();
           setLibraries(librariesData);
+          const userAvatarUrl = await getUserImageUrl(userData.Id!);
+          setAvatarUrl(userAvatarUrl);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -233,9 +233,18 @@ export function AppSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="text-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-primary p-2">
-                    <User className="size-6 text-white" />
-                  </div>
+                  {avatarUrl ? (
+                    <Image
+                      src={avatarUrl}
+                      alt="Avatar"
+                      width={200}
+                      height={200}
+                    />
+                  ) : (
+                    <div className="text-foreground flex aspect-square size-8 items-center justify-center rounded-lg bg-primary p-2">
+                      <User className="size-6 text-white" />
+                    </div>
+                  )}
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
                       {user?.Name || "User"}

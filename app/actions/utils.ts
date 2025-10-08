@@ -57,6 +57,19 @@ export async function getImageUrl(
   return `${serverUrl}/Items/${itemId}/Images/${imageType}?${params.toString()}`;
 }
 
+export async function getUserImageUrl(itemId: string): Promise<string> {
+  const { serverUrl } = await getAuthData();
+
+  const params = new URLSearchParams();
+
+  // Optimize other image types (Primary, Thumb, etc.) for faster loading
+  params.set("maxWidth", "200");
+  params.set("maxHeight", "200");
+  params.set("quality", "80");
+
+  return `${serverUrl}/Users/${itemId}/Images/Primary?${params.toString()}`;
+}
+
 export async function getDownloadUrl(itemId: string): Promise<string> {
   const { serverUrl, user } = await getAuthData();
 

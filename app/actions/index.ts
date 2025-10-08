@@ -40,6 +40,7 @@ export { searchItems, searchPeople } from "./search";
 // Utility actions
 export {
   getImageUrl,
+  getUserImageUrl,
   getDownloadUrl,
   getStreamUrl,
   getSubtitleTracks,
