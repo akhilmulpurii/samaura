@@ -21,6 +21,7 @@ export {
   reportPlaybackProgress,
   reportPlaybackStopped,
   fetchLibraryItems,
+  fetchLiveTVItems,
   fetchSimilarItems,
   scanLibrary,
   fetchMovieByCollection,

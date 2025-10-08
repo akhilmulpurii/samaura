@@ -2,7 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import { MediaCard } from "@/components/media-card";
-import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import {
+  BaseItemDto,
+  ItemSortBy,
+} from "@jellyfin/sdk/lib/generated-client/models";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +18,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { 
-  ChevronDown, 
-  ArrowUpDown, 
+import {
+  ChevronDown,
+  ArrowUpDown,
   Search,
   Type,
   Dice6,
@@ -28,38 +31,41 @@ import {
   Clock,
   ArrowUp,
   ArrowDown,
-  Dices
+  Dices,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LiveChannelCard } from "./live-channel-card";
 
 type SortField = {
   value: string;
   label: string;
-  getSortValue: (item: BaseItemDto) => number | string;
+  getSortValue: (item: BaseItemDto) => number | string | boolean;
   isDate?: boolean;
 };
 
-type SortOrder = 'asc' | 'desc';
+type SortOrder = "asc" | "desc";
 
 // Icon mapping for sort fields
 const getSortFieldIcon = (fieldValue: string) => {
   const iconMap = {
-    "SortName": Type,
-    "Random": Dice6,
-    "CommunityRating": Star,
-    "CriticRating": ThumbsUp,
-    "DateCreated": Calendar,
-    "PremiereDate": CalendarDays,
-    "Runtime": Clock,
-    "ProductionYear": Calendar,
+    SortName: Type,
+    Random: Dice6,
+    CommunityRating: Star,
+    CriticRating: ThumbsUp,
+    DateCreated: Calendar,
+    PremiereDate: CalendarDays,
+    Runtime: Clock,
+    ProductionYear: Calendar,
+    IsFavoriteOrLiked: Heart,
   };
   return iconMap[fieldValue as keyof typeof iconMap] || Type;
 };
 
 // Icon mapping for sort orders
 const getSortOrderIcon = (orderValue: SortOrder) => {
-  return orderValue === 'asc' ? ArrowUp : ArrowDown;
+  return orderValue === "asc" ? ArrowUp : ArrowDown;
 };
 
 const sortFields: SortField[] = [
@@ -86,13 +92,15 @@ const sortFields: SortField[] = [
   {
     value: "DateCreated",
     label: "Date Added",
-    getSortValue: (item) => item.DateCreated ? new Date(item.DateCreated).getTime() : 0,
+    getSortValue: (item) =>
+      item.DateCreated ? new Date(item.DateCreated).getTime() : 0,
     isDate: true,
   },
   {
     value: "PremiereDate",
     label: "Release Date",
-    getSortValue: (item) => item.PremiereDate ? new Date(item.PremiereDate).getTime() : 0,
+    getSortValue: (item) =>
+      item.PremiereDate ? new Date(item.PremiereDate).getTime() : 0,
     isDate: true,
   },
   {
@@ -105,30 +113,37 @@ const sortFields: SortField[] = [
     label: "Year",
     getSortValue: (item) => item.ProductionYear || 0,
   },
+  {
+    value: ItemSortBy.IsFavoriteOrLiked,
+    label: "Favorites",
+    getSortValue: (item) => item?.UserData?.IsFavorite || false,
+  },
 ];
 
 const sortOrders = [
-  { value: 'asc' as SortOrder, label: 'Ascending' },
-  { value: 'desc' as SortOrder, label: 'Descending' },
+  { value: "asc" as SortOrder, label: "Ascending" },
+  { value: "desc" as SortOrder, label: "Descending" },
 ];
 
 interface LibraryMediaListProps {
   mediaItems: BaseItemDto[];
   serverUrl: string;
+  initialSortField?: ItemSortBy;
 }
 
 export function LibraryMediaList({
   mediaItems,
   serverUrl,
+  initialSortField = ItemSortBy.SortName,
 }: LibraryMediaListProps) {
-  const [sortField, setSortField] = useState<string>("SortName");
+  const [sortField, setSortField] = useState<string>(initialSortField);
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [rerollTrigger, setRerollTrigger] = useState<number>(0);
 
   // Function to trigger a reroll for random sorting
   const handleReroll = () => {
-    setRerollTrigger(prev => prev + 1);
+    setRerollTrigger((prev) => prev + 1);
   };
 
   const filteredAndSortedItems = useMemo(() => {
@@ -151,18 +166,22 @@ export function LibraryMediaList({
       const valueB = selectedField.getSortValue(b);
 
       let comparison = 0;
-      if (typeof valueA === 'string' && typeof valueB === 'string') {
+      if (typeof valueA === "string" && typeof valueB === "string") {
         comparison = valueA.localeCompare(valueB);
+      } else if (typeof valueA === "boolean" && typeof valueB === "boolean") {
+        comparison = valueA === valueB ? 0 : valueA ? -1 : 1;
       } else {
         comparison = (valueA as number) - (valueB as number);
       }
 
-      return sortOrder === 'desc' ? -comparison : comparison;
+      return sortOrder === "desc" ? -comparison : comparison;
     });
   }, [mediaItems, sortField, sortOrder, searchQuery, rerollTrigger]);
 
-  const selectedFieldLabel = sortFields.find((field) => field.value === sortField)?.label || "Name";
-  const selectedOrderLabel = sortOrders.find((order) => order.value === sortOrder)?.label || "Ascending";
+  const selectedFieldLabel =
+    sortFields.find((field) => field.value === sortField)?.label || "Name";
+  const selectedOrderLabel =
+    sortOrders.find((order) => order.value === sortOrder)?.label || "Ascending";
   const SelectedFieldIcon = getSortFieldIcon(sortField);
   const SelectedOrderIcon = getSortOrderIcon(sortOrder);
 
@@ -180,7 +199,7 @@ export function LibraryMediaList({
             className="pl-9"
           />
         </div>
-        
+
         {/* Sort Controls */}
         <div className="flex items-center gap-2">
           {/* Sort Field Dropdown */}
@@ -199,7 +218,9 @@ export function LibraryMediaList({
                   <DropdownMenuItem
                     key={field.value}
                     onClick={() => setSortField(field.value)}
-                    className={`gap-2 ${sortField === field.value ? "bg-accent" : ""}`}
+                    className={`gap-2 ${
+                      sortField === field.value ? "bg-accent" : ""
+                    }`}
                   >
                     <FieldIcon className="h-4 w-4" />
                     {field.label}
@@ -208,28 +229,28 @@ export function LibraryMediaList({
               })}
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
           {/* Sort Order Button - Hide for Random */}
           {sortField !== "Random" && (
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="gap-2"
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             >
               <SelectedOrderIcon className="h-4 w-4" />
               {selectedOrderLabel}
             </Button>
           )}
-          
+
           {/* Reroll Button - Show only for Random */}
           {sortField === "Random" && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={handleReroll}
                     className="gap-2"
                   >
@@ -247,14 +268,18 @@ export function LibraryMediaList({
 
       {/* Media Grid */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4 auto-rows-max">
-        {filteredAndSortedItems.map((item) => (
-          <MediaCard
-            key={item.Id}
-            item={item}
-            serverUrl={serverUrl}
-            fullWidth
-          />
-        ))}
+        {filteredAndSortedItems.map((item) =>
+          item.Type !== "TvChannel" ? (
+            <MediaCard
+              key={item.Id}
+              item={item}
+              serverUrl={serverUrl}
+              fullWidth
+            />
+          ) : (
+            <LiveChannelCard key={item.Id} item={item} serverUrl={serverUrl} />
+          )
+        )}
       </div>
 
       {/* Empty State */}

@@ -204,7 +204,11 @@ export function AppSidebar({
                       {libraries.map((library) => (
                         <DropdownMenuItem asChild key={library.Id}>
                           <Link
-                            href={`/library/${library.Id}`}
+                            href={
+                              library.CollectionType !== "livetv"
+                                ? `/library/${library.Id}`
+                                : `/livetv/`
+                            }
                             className="flex items-center gap-2"
                           >
                             {getLibraryIcon(library.CollectionType)}
