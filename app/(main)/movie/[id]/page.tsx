@@ -268,9 +268,11 @@ export default async function Movie({
           </div>
         </div>
         {/* Cast section */}
-        <div className="mt-12 px-6">
-          <CastScrollArea people={movie.People!} mediaId={id} />
-        </div>
+        {serverUrl ? (
+          <div className="mt-12 px-6">
+            <CastScrollArea people={movie.People!} mediaId={id} />
+          </div>
+        ) : null}
 
         {similarItems && (
           <div className="mt-8 px-6">
@@ -281,6 +283,7 @@ export default async function Movie({
             />
           </div>
         )}
+
         {/* More Like This section */}
       </div>
     );
