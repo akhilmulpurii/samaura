@@ -26,6 +26,10 @@ export function PosterImage({
   const primaryImageTag = movie.ImageTags?.["Primary"];
   const blurHash = movie.ImageBlurHashes?.["Primary"]?.[primaryImageTag!] || "";
 
+  const lightSpeedUrl = posterImage?.includes("192.168.")
+    ? posterImage
+    : "https://lightspeed.ac/?url=" + posterImage;
+
   // Decode blur hash
   useEffect(() => {
     if (blurHash && !blurDataUrl) {
@@ -74,7 +78,7 @@ export function PosterImage({
         className={`${className} transition-opacity duration-300 ${
           imageLoaded ? "opacity-100" : "opacity-0"
         } ${!imageLoaded ? "absolute top-0 left-0" : ""}`}
-        src={posterImage}
+        src={lightSpeedUrl}
         alt={`${movie.Name} poster`}
         width={width}
         height={height}

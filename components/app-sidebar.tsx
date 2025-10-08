@@ -124,6 +124,10 @@ export function AppSidebar({
     }
   };
 
+  const lightSpeedUrl = avatarUrl?.includes("192.168.")
+    ? avatarUrl
+    : "https://lightspeed.ac/?url=" + avatarUrl;
+
   return (
     <Sidebar
       variant="floating"
@@ -233,9 +237,9 @@ export function AppSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  {avatarUrl ? (
+                  {lightSpeedUrl ? (
                     <Image
-                      src={avatarUrl}
+                      src={lightSpeedUrl}
                       alt="Avatar"
                       width={200}
                       height={200}
