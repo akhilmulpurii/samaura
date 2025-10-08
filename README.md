@@ -27,9 +27,11 @@
 **SAMAURA** is a clean, modern Jellyfin client built with **Next.js** — designed for speed, simplicity, and elegance.  
 It builds upon the solid foundation of **[Finetic](https://github.com/AyaanZaveri/finetic)** while introducing extended functionality and removing unnecessary complexity.
 
-### 🔹 What’s New in SAMAURA
+Special Thanks to  **[@AyaanZaveri](https://github.com/AyaanZaveri)**, this is based on his work on finetic, but I am building it upon my personal preferences.
 
-- **Simplified Experience** – Removed AI dependencies for a faster, lighter client
+### 🔹 What’s New in SAMAURA 
+
+- **Simplified Experience** – Removed AI dependencies for a faster, lighter client, as I personally would not use them at all.
 - **Collections Support** – Full integration for browsing and playing box sets
 - **Live TV (WIP)** – Upcoming support for live TV streaming and EPG integration
 - **Improved Navigation & Performance** – Cleaner architecture and optimized loading
