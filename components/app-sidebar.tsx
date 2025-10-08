@@ -50,6 +50,7 @@ import {
   Settings2,
   ChevronRight,
   DiscAlbum,
+  Antenna,
 } from "lucide-react";
 import { useSettings } from "@/contexts/settings-context";
 
@@ -119,6 +120,8 @@ export function AppSidebar({
         return <Tv className="h-4 w-4" />;
       case "boxsets":
         return <DiscAlbum className="h-4 w-4" />;
+      case "livetv":
+        return <Antenna className="h-4 w-4" />;
       default:
         return <Film className="h-4 w-4" />; // Default to film icon for any edge cases
     }
@@ -201,7 +204,11 @@ export function AppSidebar({
                       {libraries.map((library) => (
                         <DropdownMenuItem asChild key={library.Id}>
                           <Link
-                            href={`/library/${library.Id}`}
+                            href={
+                              library.CollectionType !== "livetv"
+                                ? `/library/${library.Id}`
+                                : `/livetv/`
+                            }
                             className="flex items-center gap-2"
                           >
                             {getLibraryIcon(library.CollectionType)}

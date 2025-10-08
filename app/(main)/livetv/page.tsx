@@ -1,31 +1,12 @@
-import { fetchLibraryItems, getLibraryById } from "@/app/actions";
+import { fetchLiveTVItems } from "@/app/actions";
 import { getAuthData } from "@/app/actions/utils";
 import { LibraryMediaList } from "@/components/library-media-list";
 import { SearchBar } from "@/components/search-component";
 import { ScanLibraryButton } from "@/components/scan-library-button";
+import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models";
 import { AuroraBackground } from "@/components/aurora-background";
 
-const AuroraColors = {
-  movies: ["#f87171", "#fb7185", "#f43f5e"],
-  boxsets: ["#34d399", "#10b981", "#059669"],
-  tvshows: ["#fbbf24", "#f59e0b", "#d97706"],
-  switch: ["#a78bfa", "#8b5cf6", "#7c3aed"],
-};
-
-function getAuroraColors(collectionType: string) {
-  switch (collectionType) {
-    case "movies":
-      return AuroraColors.movies;
-    case "boxsets":
-      return AuroraColors.boxsets;
-    case "tvshows":
-      return AuroraColors.tvshows;
-    default:
-      return AuroraColors.switch;
-  }
-}
-
-export default async function LibraryPage({
+export default async function LiveTVPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -35,27 +16,15 @@ export default async function LibraryPage({
   const authData = await getAuthData();
   const { serverUrl } = authData;
 
-  // Fetch both library details and items
-  const [libraryDetails, initialLibraryItems] = await Promise.all([
-    getLibraryById(id),
-    fetchLibraryItems(id), // First fetch to get totalRecordCount
-  ]);
-
   // Fetch all items using the total count
-  const libraryItems = await fetchLibraryItems(
-    id,
-    initialLibraryItems.totalRecordCount
-  );
+  const libraryItems = await fetchLiveTVItems();
 
-  console.log(libraryItems.items.length);
-  console.log(libraryItems.totalRecordCount);
-
-  const libraryName = libraryDetails?.Name || "Library";
+  const libraryName = "Live TV";
 
   return (
     <div className="relative px-4 py-6 max-w-full overflow-hidden">
       <AuroraBackground
-        colorStops={getAuroraColors(libraryDetails.CollectionType || "")}
+        colorStops={["#a78bfa", "#8b5cf6", "#7c3aed"]}
         amplitude={0.5}
         className="fixed inset-0 z-0 pointer-events-none opacity-40"
       />
@@ -80,6 +49,7 @@ export default async function LibraryPage({
         <LibraryMediaList
           mediaItems={libraryItems.items}
           serverUrl={serverUrl}
+          initialSortField={ItemSortBy.IsFavoriteOrLiked}
         />
       </div>
     </div>

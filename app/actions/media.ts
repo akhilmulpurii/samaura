@@ -8,6 +8,7 @@ import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models/item-sort-
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client/models/sort-order";
 import { UserLibraryApi } from "@jellyfin/sdk/lib/generated-client/api/user-library-api";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
+import { getLiveTvApi } from "@jellyfin/sdk/lib/utils/api/live-tv-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
 import { createJellyfinInstance } from "@/lib/utils";
@@ -437,6 +438,52 @@ export async function fetchLibraryItems(
       sortOrder: [SortOrder.Ascending],
       limit,
       startIndex,
+      fields: [
+        ItemFields.CanDelete,
+        ItemFields.PrimaryImageAspectRatio,
+        ItemFields.Overview,
+        ItemFields.DateCreated,
+      ],
+    });
+
+    return {
+      items: data.Items || [],
+      totalRecordCount: data.TotalRecordCount || 0,
+    };
+  } catch (error) {
+    console.error("Failed to fetch library items:", error);
+
+    // If it's an authentication error, throw an error with a special flag
+    if (isAuthError(error)) {
+      const authError = new Error(
+        "Authentication expired. Please sign in again."
+      );
+      (authError as any).isAuthError = true;
+      throw authError;
+    }
+
+    return { items: [], totalRecordCount: 0 };
+  }
+}
+export async function fetchLiveTVItems(
+  isFavorite: boolean | undefined = undefined
+): Promise<{
+  items: JellyfinItem[];
+  totalRecordCount: number;
+}> {
+  try {
+    const { serverUrl, user } = await getAuthData();
+    const jellyfinInstance = createJellyfinInstance();
+    const api = jellyfinInstance.createApi(serverUrl);
+    api.accessToken = user.AccessToken;
+
+    const { data } = await getLiveTvApi(api).getLiveTvChannels({
+      userId: user.Id,
+      enableImages: true,
+      isFavorite,
+      sortBy: [ItemSortBy.IsFavoriteOrLiked],
+      sortOrder: SortOrder.Ascending,
+
       fields: [
         ItemFields.CanDelete,
         ItemFields.PrimaryImageAspectRatio,
