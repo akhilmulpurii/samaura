@@ -45,6 +45,7 @@ export {
   getDownloadUrl,
   getStreamUrl,
   getSubtitleTracks,
+  getAudioTracks,
   getUserLibraries,
   getLibraryById,
   getLiveTVStreamUrl,

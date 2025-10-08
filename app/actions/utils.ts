@@ -104,14 +104,15 @@ export async function getStreamUrl(
   itemId: string,
   mediaSourceId: string,
   quality?: string,
-  videoBitrate?: number
+  videoBitrate?: number,
+  audioStreamIndex: number = 1
 ): Promise<string> {
   const { serverUrl, user } = await getAuthData();
 
   // Generate a unique PlaySessionId for each stream request
   const playSessionId = crypto.randomUUID();
 
-  let url = `${serverUrl}/Videos/${itemId}/master.m3u8?api_key=${user.AccessToken}&MediaSourceId=${mediaSourceId}&PlaySessionId=${playSessionId}&VideoCodec=h264,hevc&AudioCodec=aac,mp3&TranscodingProfile=Default`;
+  let url = `${serverUrl}/Videos/${itemId}/master.m3u8?api_key=${user.AccessToken}&MediaSourceId=${mediaSourceId}&PlaySessionId=${playSessionId}&VideoCodec=h264,hevc&AudioCodec=aac,mp3&TranscodingProfile=Default&AudioStreamIndex=${audioStreamIndex}`;
 
   // Apply custom bitrate if specified (takes precedence over quality presets)
   if (videoBitrate && videoBitrate > 0) {
@@ -187,6 +188,60 @@ export async function getSubtitleTracks(
   }
 }
 
+export async function getAudioTracks(
+  itemId: string,
+  mediaSourceId: string
+): Promise<
+  Array<{
+    id: number | undefined;
+    label: string;
+    language: string;
+    codec: string | null | undefined;
+    channels: number | null | undefined;
+    default: boolean;
+  }>
+> {
+  const { serverUrl, user } = await getAuthData();
+  const jellyfinInstance = createJellyfinInstance();
+  const api = jellyfinInstance.createApi(serverUrl);
+  api.accessToken = user.AccessToken;
+
+  try {
+    const userLibraryApi = new UserLibraryApi(api.configuration);
+    const { data: item } = await userLibraryApi.getItem({
+      userId: user.Id,
+      itemId: itemId,
+    });
+
+    const mediaSource = item.MediaSources?.find(
+      (ms) => ms.Id === mediaSourceId
+    );
+
+    // 🔊 Get all audio streams
+    const audioStreams =
+      mediaSource?.MediaStreams?.filter((stream) => stream.Type === "Audio") ||
+      [];
+
+    const audioTracks = audioStreams.map((stream) => ({
+      id: stream.Index,
+      label:
+        stream.DisplayTitle ||
+        stream.Language ||
+        `${stream.Codec || "Audio"} Track ${stream.Index}`,
+      language: stream.Language || "unknown",
+      codec: stream.Codec,
+      channels: stream.Channels,
+      default: stream.IsDefault || false,
+    }));
+
+    console.log("Audio tracks:", audioTracks);
+
+    return audioTracks;
+  } catch (error) {
+    console.error("Failed to fetch audio tracks:", error);
+    return [];
+  }
+}
 export async function getUserLibraries(): Promise<any[]> {
   try {
     const { serverUrl, user } = await getAuthData();

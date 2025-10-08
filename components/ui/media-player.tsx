@@ -184,6 +184,16 @@ interface MediaPlayerContextValue {
   customSubtitleTracks?: CustomSubtitleTrack[];
   customSubtitlesEnabled: boolean;
   onCustomSubtitleChange?: (track: CustomSubtitleTrack | null) => void;
+  audioTracks?: Array<{
+    id: number | undefined;
+    label: string;
+    language: string;
+    codec: string | null | undefined;
+    channels: number | null | undefined;
+    default: boolean;
+  }>;
+  selectedAudioTrackId?: number;
+  onAudioTrackChange?: (trackId: number) => void;
   chapters?: ChapterCue[];
 }
 
@@ -234,6 +244,16 @@ interface MediaPlayerRootProps
   customSubtitleTracks?: CustomSubtitleTrack[];
   customSubtitlesEnabled?: boolean;
   onCustomSubtitleChange?: (track: CustomSubtitleTrack | null) => void;
+  audioTracks?: Array<{
+    id: number | undefined;
+    label: string;
+    language: string;
+    codec: string | null | undefined;
+    channels: number | null | undefined;
+    default: boolean;
+  }>;
+  selectedAudioTrackId?: number;
+  onAudioTrackChange?: (trackId: number) => void;
   chapters?: ChapterCue[];
 }
 
@@ -282,6 +302,9 @@ function MediaPlayerRootImpl(props: MediaPlayerRootProps) {
     customSubtitleTracks,
     customSubtitlesEnabled = false,
     onCustomSubtitleChange,
+    audioTracks,
+    selectedAudioTrackId,
+    onAudioTrackChange,
     chapters,
     children,
     className,
@@ -805,6 +828,9 @@ function MediaPlayerRootImpl(props: MediaPlayerRootProps) {
       customSubtitleTracks,
       customSubtitlesEnabled,
       onCustomSubtitleChange,
+      audioTracks,
+      selectedAudioTrackId,
+      onAudioTrackChange,
       chapters,
     }),
     [
@@ -821,6 +847,9 @@ function MediaPlayerRootImpl(props: MediaPlayerRootProps) {
       customSubtitleTracks,
       customSubtitlesEnabled,
       onCustomSubtitleChange,
+      audioTracks,
+      selectedAudioTrackId,
+      onAudioTrackChange,
       chapters,
     ]
   );
@@ -1547,7 +1576,8 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
   const mediaChaptersCues = useMediaSelector(
     (state) => state.mediaChaptersCues ?? []
   );
-  const chapterCues = contextChapters.length > 0 ? contextChapters : mediaChaptersCues;
+  const chapterCues =
+    contextChapters.length > 0 ? contextChapters : mediaChaptersCues;
   const mediaPreviewTime = useMediaSelector((state) => state.mediaPreviewTime);
   const mediaPreviewImage = useMediaSelector(
     (state) => state.mediaPreviewImage
@@ -3055,8 +3085,8 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
                   const label = rendition.height
                     ? `${rendition.height}p`
                     : rendition.width
-                      ? `${rendition.width}p`
-                      : (rendition.id ?? "Unknown");
+                    ? `${rendition.width}p`
+                    : rendition.id ?? "Unknown";
 
                   const selected = rendition.id === selectedRenditionId;
 
@@ -3148,7 +3178,9 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
                   );
                   return (
                     <DropdownMenuItem
-                      key={`${subtitleTrack.kind}-${subtitleTrack.label}-${subtitleTrack.language}-${crypto.randomUUID()}`}
+                      key={`${subtitleTrack.kind}-${subtitleTrack.label}-${
+                        subtitleTrack.language
+                      }-${crypto.randomUUID()}`}
                       className="justify-between"
                       onSelect={() => onShowSubtitleTrack(subtitleTrack)}
                     >
@@ -3165,6 +3197,38 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
                 No captions available
               </DropdownMenuItem>
             )}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <span className="flex-1">Audio Streams</span>
+            <Badge variant="outline" className="rounded-sm">
+              {context.audioTracks
+                ?.find((track) => track.id === context.selectedAudioTrackId)
+                ?.language?.toUpperCase() || "ENG"}
+            </Badge>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="max-h-64 overflow-y-auto">
+            {context.audioTracks?.map((audioTrack) => {
+              return (
+                <DropdownMenuItem
+                  key={`${audioTrack.id}-${audioTrack.label}-${audioTrack.language}`}
+                  className="justify-between"
+                  onSelect={() => context.onAudioTrackChange?.(audioTrack.id!)}
+                >
+                  {audioTrack.label}
+                  {audioTrack.id === context.selectedAudioTrackId && (
+                    <CheckIcon />
+                  )}
+                </DropdownMenuItem>
+              );
+            })}
+            {!context.audioTracks ||
+              (context.audioTracks.length === 0 && (
+                <DropdownMenuItem disabled>
+                  No Audio Streams available
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuContent>

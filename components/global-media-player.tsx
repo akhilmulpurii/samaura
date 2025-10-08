@@ -39,6 +39,7 @@ import {
   reportPlaybackStart,
   reportPlaybackProgress,
   reportPlaybackStopped,
+  getAudioTracks,
 } from "@/app/actions";
 import { getSubtitleContent } from "@/app/actions/subtitles";
 import HlsVideoElement from "hls-video-element/react";
@@ -86,6 +87,17 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
       active: boolean;
     }>
   >([]);
+  const [audioTracks, setAudioTracks] = useState<
+    Array<{
+      id: number | undefined;
+      label: string;
+      language: string;
+      codec: string | null | undefined;
+      channels: number | null | undefined;
+      default: boolean;
+    }>
+  >([]);
+  const [selectedAudioTrackId, setSelectedAudioTrackId] = useState(1);
   const [loading, setLoading] = useState(false);
   const [videoStarted, setVideoStarted] = useState(false);
   const [fetchingSubtitles, setFetchingSubtitles] = useState(false);
@@ -380,7 +392,7 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
       setBlurDataUrl(null); // Reset blur data URL
       loadMedia();
     }
-  }, [currentMedia, isPlayerVisible, videoBitrate]);
+  }, [currentMedia, isPlayerVisible, videoBitrate, selectedAudioTrackId]);
 
   // Decode blur hash for backdrop image
   useEffect(() => {
@@ -467,7 +479,8 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
             currentMedia.id,
             sourceToUse.Id!,
             undefined,
-            bitrate
+            bitrate,
+            selectedAudioTrackId
           );
           setStreamUrl(streamUrl);
         }
@@ -487,6 +500,14 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
         // Don't load any subtitle by default - let user choose
         setSubtitleData([]);
         setCurrentSubtitle(null);
+
+        // Start fetching alternate audio tracks data asynchronously without blocking playback
+        const audioTracksList = await getAudioTracks(
+          currentMedia.id,
+          sourceToUse.Id!
+        );
+        // Mark all audio tracks as inactive initially
+        setAudioTracks(audioTracksList);
 
         // Process chapters if available
         if (details.Chapters && details.Chapters.length > 0) {
@@ -593,6 +614,11 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
         }}
         className="w-screen"
         customSubtitleTracks={subtitleTracks}
+        audioTracks={audioTracks}
+        selectedAudioTrackId={selectedAudioTrackId}
+        onAudioTrackChange={(trackId: number) =>
+          setSelectedAudioTrackId(trackId)
+        }
         customSubtitlesEnabled={subtitleTracks.length > 0}
         chapters={chapters}
         onCustomSubtitleChange={(subtitleTrack) => {
