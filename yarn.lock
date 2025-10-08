@@ -2765,7 +2765,7 @@
     semver "^7.6.0"
     ts-api-utils "^2.1.0"
 
-"@typescript-eslint/utils@8.46.0":
+"@typescript-eslint/utils@8.46.0", "@typescript-eslint/utils@^8.0.0":
   version "8.46.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-8.46.0.tgz#27025c5ed7cbc928440d6a30edd6ba34cc5b927a"
   integrity sha512-nD6yGWPj1xiOm4Gk0k6hLSZz2XkNXhuYmyIrOWcHoPuAhjT9i5bAG+xbWPgFeNR8HPHHtpNKdYUXJl/D3x7f5g==
@@ -4934,6 +4934,13 @@ eslint-plugin-import@^2.31.0:
     semver "^6.3.1"
     string.prototype.trimend "^1.0.9"
     tsconfig-paths "^3.15.0"
+
+eslint-plugin-jest@^29.0.1:
+  version "29.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-29.0.1.tgz#0f72a81349409d20742208260c9a6cb9efed4df5"
+  integrity sha512-EE44T0OSMCeXhDrrdsbKAhprobKkPtJTbQz5yEktysNpHeDZTAL1SfDTNKmcFfJkY6yrQLtTKZALrD3j/Gpmiw==
+  dependencies:
+    "@typescript-eslint/utils" "^8.0.0"
 
 eslint-plugin-jsx-a11y@^6.10.0:
   version "6.10.2"
