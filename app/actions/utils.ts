@@ -172,13 +172,18 @@ export async function getUserLibraries(): Promise<any[]> {
 
     const { data } = await getUserViewsApi(api).getUserViews({
       userId: user.Id,
-      includeExternalContent: false,
+      includeExternalContent: true,
     });
 
     // Filter for movie and TV show libraries only
     const supportedLibraries = (data.Items || []).filter((library: any) => {
       const type = library.CollectionType?.toLowerCase();
-      return type === "movies" || type === "tvshows" || type === "boxsets";
+      return (
+        type === "movies" ||
+        type === "tvshows" ||
+        type === "boxsets" ||
+        type === "livetv"
+      );
     });
 
     return supportedLibraries;
