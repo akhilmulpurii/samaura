@@ -147,7 +147,7 @@ export function MediaCard({
               <img
                 src={lightSpeedUrl}
                 alt={item.Name || ""}
-                className={`w-full h-full object-cover transition-opacity duration-300 shadow-lg shadow-sm group-hover:shadow-md ${
+                className={`w-full h-full object-cover transition-opacity duration-300 shadow-lg group-hover:shadow-md ${
                   progressPercentage > 0 ? "rounded-t-md" : "rounded-md"
                 } opacity-100`}
                 onLoad={(e) => {
