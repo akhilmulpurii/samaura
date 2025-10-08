@@ -143,7 +143,7 @@ export function AppSidebar({
               <Link href="/">
                 <div className="text-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Image
-                    src="/logo/samaura.png"
+                    src="/logo/icons/Samaura_TintedRed.png"
                     alt="SamAura Logo"
                     width={32}
                     height={32}
