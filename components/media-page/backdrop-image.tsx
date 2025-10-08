@@ -24,11 +24,16 @@ export function BackdropImage({
 
   // Get blur hash for backdrop
   // Use ParentBackdropImageTags for episodes, BackdropImageTags for other media types
-  const backdropImageTag = movie.Type === "Episode" 
-    ? movie.ParentBackdropImageTags?.[0]
-    : movie.BackdropImageTags?.[0];
+  const backdropImageTag =
+    movie.Type === "Episode"
+      ? movie.ParentBackdropImageTags?.[0]
+      : movie.BackdropImageTags?.[0];
   const blurHash =
     movie.ImageBlurHashes?.["Backdrop"]?.[backdropImageTag!] || "";
+
+  const lightSpeedUrl = backdropImage?.includes("192.168.")
+    ? backdropImage
+    : "https://lightspeed.ac/?url=" + backdropImage;
 
   // Decode blur hash
   useEffect(() => {
@@ -77,7 +82,7 @@ export function BackdropImage({
         className={`${className} transition-opacity duration-300 ${
           imageLoaded ? "opacity-100" : "opacity-0"
         }`}
-        src={backdropImage}
+        src={lightSpeedUrl}
         alt={`${movie.Name} backdrop`}
         width={width}
         height={height}
