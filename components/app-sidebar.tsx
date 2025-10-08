@@ -237,7 +237,7 @@ export function AppSidebar({
                   role="button"
                   tabIndex={0}
                 >
-                  {lightSpeedUrl ? (
+                  {avatarUrl ? (
                     <Image
                       src={lightSpeedUrl}
                       alt="Avatar"
