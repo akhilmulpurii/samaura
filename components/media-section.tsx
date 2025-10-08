@@ -7,23 +7,25 @@ import { MediaCard } from "@/components/media-card";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import { LiveChannelCard } from "./live-channel-card";
+import Link from "next/link";
 
 interface MediaSectionProps {
   sectionName: string;
   mediaItems: BaseItemDto[] | any[];
   serverUrl: string;
-  onViewAll?: () => void;
-  isLoading?: boolean;
+  library?: any;
   continueWatching?: boolean;
+  hideViewAll?: boolean;
 }
 
 export function MediaSection({
   sectionName,
   mediaItems,
   serverUrl,
-  onViewAll,
-  isLoading = false,
+  library,
   continueWatching = false,
+  hideViewAll = false,
 }: MediaSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -31,7 +33,9 @@ export function MediaSection({
   useEffect(() => {
     // Find the ScrollArea viewport after component mounts
     if (scrollRef.current) {
-      const viewport = scrollRef.current.closest('[data-slot="scroll-area"]')?.querySelector('[data-slot="scroll-area-viewport"]') as HTMLDivElement;
+      const viewport = scrollRef.current
+        .closest('[data-slot="scroll-area"]')
+        ?.querySelector('[data-slot="scroll-area-viewport"]') as HTMLDivElement;
       if (viewport) {
         viewportRef.current = viewport;
       }
@@ -49,6 +53,13 @@ export function MediaSection({
       viewportRef.current.scrollBy({ left: 300, behavior: "smooth" });
     }
   };
+
+  const href =
+    library && library.Id
+      ? library?.CollectionType === "livetv"
+        ? `/livetv/`
+        : `/library/${library.Id}`
+      : "#";
 
   return (
     <section className="relative z-10 mb-8">
@@ -73,14 +84,14 @@ export function MediaSection({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-background/10 border-border text-foreground hover:bg-accent"
-            onClick={onViewAll}
-          >
-            View All
-          </Button>
+          {!hideViewAll ? (
+            <Link
+              href={href}
+              className="border-border flex items-center justify-center text-foreground hover:bg-accent border bg-background shadow-xs  hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+            >
+              View All
+            </Link>
+          ) : null}
         </div>
       </div>
       {mediaItems.length > 0 ? (
@@ -88,12 +99,16 @@ export function MediaSection({
           <div className="flex gap-4 w-max" ref={scrollRef}>
             {mediaItems.map((item) => (
               <div key={item.Id} className="flex-shrink-0">
-                <MediaCard
-                  item={item}
-                  serverUrl={serverUrl}
-                  percentageWatched={item.UserData?.PlayedPercentage || 0}
-                  continueWatching={continueWatching}
-                />
+                {item?.Type === "TvChannel" ? (
+                  <LiveChannelCard item={item} serverUrl={serverUrl} />
+                ) : (
+                  <MediaCard
+                    item={item}
+                    serverUrl={serverUrl}
+                    percentageWatched={item.UserData?.PlayedPercentage || 0}
+                    continueWatching={continueWatching}
+                  />
+                )}
               </div>
             ))}
           </div>

@@ -465,7 +465,7 @@ export async function fetchLibraryItems(
     return { items: [], totalRecordCount: 0 };
   }
 }
-export async function fetchLiveTVItems(): Promise<{
+export async function fetchLiveTVItems(isFavorite = undefined): Promise<{
   items: JellyfinItem[];
   totalRecordCount: number;
 }> {
@@ -478,6 +478,7 @@ export async function fetchLiveTVItems(): Promise<{
     const { data } = await getLiveTvApi(api).getLiveTvChannels({
       userId: user.Id,
       enableImages: true,
+      isFavorite,
       sortBy: [ItemSortBy.IsFavoriteOrLiked],
       sortOrder: SortOrder.Ascending,
 

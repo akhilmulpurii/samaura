@@ -1,4 +1,8 @@
-import { fetchResumeItems, fetchLibraryItems } from "@/app/actions/media";
+import {
+  fetchResumeItems,
+  fetchLibraryItems,
+  fetchLiveTVItems,
+} from "@/app/actions/media";
 import { getAuthData, getUserLibraries } from "@/app/actions/utils";
 import { AuthErrorHandler } from "@/app/components/auth-error-handler";
 import { MediaSection } from "@/components/media-section";
@@ -28,7 +32,10 @@ export default async function Home() {
 
     // Fetch items for each library
     const libraryPromises = userLibraries.map(async (library) => {
-      const { items } = await fetchLibraryItems(library.Id, 12);
+      const { items } =
+        library.CollectionType === "livetv"
+          ? await fetchLiveTVItems(true)
+          : await fetchLibraryItems(library.Id, 12);
       return { library, items };
     });
 
@@ -71,19 +78,19 @@ export default async function Home() {
             mediaItems={resumeItems}
             serverUrl={serverUrl}
             continueWatching
+            hideViewAll
           />
         )}
 
-        {libraries
-          .filter(({ library }) => library.CollectionType !== "livetv")
-          .map(({ library, items }) => (
-            <MediaSection
-              key={library.Id}
-              sectionName={library.Name}
-              mediaItems={items}
-              serverUrl={serverUrl}
-            />
-          ))}
+        {libraries.map(({ library, items }) => (
+          <MediaSection
+            key={library.Id}
+            library={library}
+            sectionName={library.Name}
+            mediaItems={items}
+            serverUrl={serverUrl}
+          />
+        ))}
       </div>
     </AuthErrorHandler>
   );
