@@ -7,8 +7,6 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      # Optional: Add your Google AI API key for AI features
-      # - GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]

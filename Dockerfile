@@ -1,60 +1,64 @@
-# Multi-stage build for Samaura
-# Stage 1: Dependencies and build
-FROM node:18-alpine AS builder
+# -----------------------------
+# Stage 1: Builder
+# -----------------------------
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY bun.lock* ./
+# Copy dependency files
+COPY package.json yarn.lock ./
+
+# Install git for fetching dependencies
+RUN apk add --no-cache git
 
 # Install dependencies
-RUN npm ci --only=production --ignore-scripts
+RUN yarn install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the Next.js app
+RUN yarn build
 
-# Stage 2: Production image
+# -----------------------------
+# Stage 2: Runner (Production)
+# -----------------------------
 FROM node:18-alpine AS runner
 
+# Set working directory
 WORKDIR /app
 
 # Install curl for health checks
 RUN apk add --no-cache curl
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create a non-root user for security
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs
 
-# Copy built application from builder stage
+# Copy necessary build artifacts from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-
-# Copy package.json for runtime
 COPY --from=builder /app/package.json ./package.json
 
-# Set correct permissions
+# Change ownership
 RUN chown -R nextjs:nodejs /app
 
-# Switch to non-root user
+# Use non-root user
 USER nextjs
 
-# Expose port
+# Expose the app port
 EXPOSE 3000
 
-# Set environment variables
+# Environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+# Healthcheck for Docker
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:3000 || exit 1
 
-# Start the application
+# Start the app
 CMD ["node", "server.js"]
