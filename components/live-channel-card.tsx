@@ -18,7 +18,7 @@ export function LiveChannelCard({
   const { playMedia, setIsPlayerVisible } = useMediaPlayer();
 
   // WIP - Link logic for TV channels
-  let linkHref = "";
+  let linkHref = "/livetv/" + item.Id;
 
   // Determine image type based on continueWatching
 
