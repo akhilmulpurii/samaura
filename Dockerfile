@@ -24,7 +24,7 @@ RUN yarn build
 # -----------------------------
 # Stage 2: Runner (Production)
 # -----------------------------
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Set working directory
 WORKDIR /app
