@@ -29,6 +29,10 @@ jobs:
             ./ \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
 
+      # Step 3.1 — Install rsync if not already installed
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
       # Step 4 — Build and restart using docker compose
       - name: Rebuild and restart containers
         run: |
