@@ -21,10 +21,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
-      # Step 2.5 — Install rsync if not already installed
-      - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
-
       # Step 3 — Copy project files to server
       - name: Copy project files to server
         run: |
