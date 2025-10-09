@@ -12,11 +12,15 @@ export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("server");
   const router = useRouter();
 
+  console.log("OnboardingFlow rendered, currentStep:", currentStep);
+
   useEffect(() => {
     const checkAuthStatus = async () => {
       const authenticated = await isAuthenticated();
       const serverUrl = await getServerUrl();
-      
+
+      console.log("Auth status:", { authenticated, serverUrl });
+
       // Check if user is already authenticated
       if (authenticated && serverUrl) {
         router.replace("/");
@@ -27,7 +31,7 @@ export function OnboardingFlow() {
         setCurrentStep("server");
       }
     };
-    
+
     checkAuthStatus();
   }, [router]);
 
