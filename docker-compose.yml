@@ -7,6 +7,8 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - SERVER_BASE_URL=${SERVER_BASE_URL}
+      - SECURE_COOKIE=${SECURE_COOKIE:-true}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]

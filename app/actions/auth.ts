@@ -8,6 +8,10 @@ import { Configuration } from "@jellyfin/sdk/lib/generated-client/configuration"
 import { UserDto } from "@jellyfin/sdk/lib/generated-client/models/user-dto";
 import { createJellyfinInstance } from "@/lib/utils";
 
+const secure = process.env.SECURE_COOKIE
+  ? process.env.SECURE_COOKIE.toLowerCase() === "true"
+  : process.env.NODE_ENV === "production";
+
 // Type aliases for easier use
 type JellyfinUserWithToken = UserDto & { AccessToken?: string };
 
@@ -22,7 +26,7 @@ export async function setServerUrl(url: string) {
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure,
   });
 }
 
@@ -133,7 +137,7 @@ export async function authenticateUser(
           path: "/",
           maxAge: 60 * 60 * 24 * 30, // 30 days - extended from 7 days
           sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
+          secure,
         }
       );
 
@@ -212,7 +216,7 @@ export async function authenticateUser(
               path: "/",
               maxAge: 60 * 60 * 24 * 30,
               sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
+              secure,
             }
           );
 

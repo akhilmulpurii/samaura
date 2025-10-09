@@ -16,6 +16,8 @@ import { VibrantAuroraBackground } from "@/components/vibrant-aurora-background"
 import { checkServerHealth, setServerUrl } from "@/app/actions";
 import { Loader2, Server, CheckCircle, Globe, Shield } from "lucide-react";
 
+const SERVER_BASE_URL = process.env.NEXT_PUBLIC_SERVER_BASE_URL || "";
+
 interface ServerSetupProps {
   onNext: () => void;
 }
@@ -29,7 +31,7 @@ type ConnectionStatus =
   | "error";
 
 export function ServerSetup({ onNext }: ServerSetupProps) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(SERVER_BASE_URL);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("idle");
   const [error, setError] = useState("");
@@ -116,6 +118,8 @@ export function ServerSetup({ onNext }: ServerSetupProps) {
       setError("An unexpected error occurred. Please try again.");
     }
   };
+
+  console.log("VALUE:", SERVER_BASE_URL);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative w-full">
