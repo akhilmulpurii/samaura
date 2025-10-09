@@ -1,0 +1,40 @@
+name: Deploy Samaura to Server
+
+on:
+  push:
+    branches:
+      - main # deploy only when code is pushed to main branch
+
+jobs:
+  deploy:
+    name: Build and Deploy via Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1 — Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2 — Set up SSH key to access your Arch Linux server
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      # Step 3 — Copy project files to server
+      - name: Copy project files to server
+        run: |
+          rsync -avz --delete --exclude='.env' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_PATH }}
+
+      # Step 4 — Build and restart using docker compose
+      - name: Rebuild and restart containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd ${{ secrets.SERVER_PATH }}
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+          EOF
