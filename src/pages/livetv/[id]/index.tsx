@@ -10,6 +10,7 @@ import { PosterImage } from "../../../components/media-page/poster-image";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAuthData } from "../../../actions/media";
+import LoadingSpinner from "../../../components/loading-spinner";
 
 export default function LiveChannel() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,7 @@ export default function LiveChannel() {
   const [primaryImage, setPrimaryImage] = useState<string>("");
   const [backdropImage, setBackdropImage] = useState<string>("");
   const [logoImage, setLogoImage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -54,11 +56,15 @@ export default function LiveChannel() {
         if (err.message?.includes("Authentication expired")) {
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
   }, [id]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (tvChannel == null || id == null)
     return (

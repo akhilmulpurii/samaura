@@ -7,6 +7,7 @@ import { AuroraBackground } from "../../components/aurora-background";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import LoadingSpinner from "../../components/loading-spinner";
 
 const AuroraColors = {
   movies: ["#f87171", "#fb7185", "#f43f5e"],
@@ -37,6 +38,7 @@ export default function LibraryPage() {
   const [libraryItems, setLibraryItems] = useState<BaseItemDto[]>([]);
   const [libraryName, setLibraryName] = useState<string>("Library");
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchLibraryData() {
@@ -73,11 +75,15 @@ export default function LibraryPage() {
           // redirect
           window.location.href = "/login";
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchLibraryData();
   }, [id]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (
     libraryDetails == null ||

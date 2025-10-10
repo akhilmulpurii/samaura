@@ -26,6 +26,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default function BoxSet() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +38,7 @@ export default function BoxSet() {
   const [backdropImage, setBackdropImage] = useState<string>("");
   const [logoImage, setLogoImage] = useState<string>("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -73,10 +75,14 @@ export default function BoxSet() {
           // use React Router navigate
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
     if (id?.trim()) fetchData();
   }, [id]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (boxset == null || id == null)
     return <div className="p-4">Error loading boxset. Please try again.</div>;

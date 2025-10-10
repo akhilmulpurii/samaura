@@ -11,6 +11,7 @@ import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models/base-item
 import { AuroraBackground } from "../../components/aurora-background";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function Home() {
   >([]);
 
   const [authError, setAuthError] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -61,11 +63,15 @@ export default function Home() {
           setAuthError(error);
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
   }, [navigate]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (!libraries || serverUrl == null)
     return (

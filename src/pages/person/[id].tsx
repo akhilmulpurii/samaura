@@ -15,6 +15,7 @@ import { BiographySection } from "../../components/biography-section";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BaseItemDto } from "@jellyfin/sdk/lib/generated-client/models";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,7 @@ export default function PersonPage() {
   const [primaryImage, setPrimaryImage] = useState<string>("");
   const [filmography, setFilmography] = useState<any[]>([]);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -48,6 +50,8 @@ export default function PersonPage() {
         if (err.message?.includes("Authentication expired")) {
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -95,6 +99,8 @@ export default function PersonPage() {
     if (lowerName.includes("facebook")) return { name: "Facebook", icon: "👥" };
     return { name: name, icon: "🔗" };
   };
+
+  if (loading) return <LoadingSpinner />;
 
   if (person == null || id == null || serverUrl == null)
     return (

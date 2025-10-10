@@ -24,6 +24,7 @@ import { PosterImage } from "../../components/media-page/poster-image";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default async function Show() {
   const { id } = useParams<{ id: string }>();
@@ -36,6 +37,7 @@ export default async function Show() {
   const [logoImage, setLogoImage] = useState<string>("");
   const [similarItems, setSimilarItems] = useState<BaseItemDto[]>([]);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -69,11 +71,15 @@ export default async function Show() {
         if (err.message?.includes("Authentication expired")) {
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
   }, [id, navigate]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (show == null || id == null || serverUrl == null)
     return <div className="p-4">Error loading Series. Please try again.</div>;

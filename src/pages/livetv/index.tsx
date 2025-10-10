@@ -10,12 +10,14 @@ import {
 import { AuroraBackground } from "../../components/aurora-background";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import LoadingSpinner from "../../components/loading-spinner";
 
 const libraryName = "Live TV";
 
 export default function LiveTVPage() {
   const [libraryItems, setLibraryItems] = useState<BaseItemDto[]>([]);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchLibraryData() {
@@ -37,11 +39,15 @@ export default function LiveTVPage() {
           // redirect
           window.location.href = "/login";
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchLibraryData();
   }, []);
+
+  if (loading) return <LoadingSpinner />;
 
   if (serverUrl == null)
     return <div className="p-4">Error loading Live TV. Please try again.</div>;

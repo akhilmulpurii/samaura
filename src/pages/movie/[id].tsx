@@ -21,6 +21,7 @@ import { PosterImage } from "../../components/media-page/poster-image";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default function Movie() {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,7 @@ export default function Movie() {
   const [logoImage, setLogoImage] = useState<string>("");
   const [similarItems, setSimilarItems] = useState<any[]>([]);
   const [serverUrl, setServerUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -63,11 +65,15 @@ export default function Movie() {
         if (err.message?.includes("Authentication expired")) {
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
   }, [id, navigate]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (movie == null || id == null || serverUrl == null)
     return <div className="p-4">Error loading Movie. Please try again.</div>;

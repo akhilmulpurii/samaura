@@ -18,6 +18,7 @@ import { PosterImage } from "../../components/media-page/poster-image";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default async function Episode() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,7 @@ export default async function Episode() {
   const [similarItems, setSimilarItems] = useState<BaseItemDto[]>([]);
   const [serverUrl, setServerUrl] = useState<string | null>();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -59,10 +61,14 @@ export default async function Episode() {
           // use React Router navigate
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
     fetchData();
   }, [id]);
+
+  if (loading) return <LoadingSpinner />;
 
   if (episode == null || id == null)
     return <div className="p-4">Error loading Episode. Please try again.</div>;
