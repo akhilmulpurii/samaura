@@ -48,3 +48,5 @@ videos/*
 public/_next-video
 
 /dist
+
+/old-codebase
