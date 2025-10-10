@@ -1,13 +1,13 @@
 <h1 align="center">
   <br>
-    <a href="https://github.com/akhilmulpurii/samaura"><img src="https://github.com/akhilmulpurii/samaura/blob/main/public/logo/desktop/samaura.png?raw=true" alt="SAMAURA" width="200"></a>
+    <a href="https://github.com/akhilmulpurii/samaura"><img src="https://github.com/akhilmulpurii/samaura/blob/main/src/assets/logo/icons/Samaura_Default.png?raw=true" alt="SAMAURA" width="200"></a>
   <br>
   SAMAURA
   <br>
 </h1>
 <h4 align="center">A Modern, Streamlined Jellyfin Client built with Vite+React+Tauri</h4>
 
-https://github.com/user-attachments/assets/07fb5741-1edf-4655-9001-6df3e2b1c72b
+https://github.com/user-attachments/assets/5f536de2-de3f-4b2e-83bc-331ab88880ad
 
 <div align="center">
   <table>
