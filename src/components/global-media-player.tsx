@@ -58,6 +58,7 @@ import {
 import { fetchIntroOutro } from "../actions/media";
 import { decode } from "blurhash";
 import DisplayEndTime from "./display-end-time";
+import { v4 as uuidv4 } from "uuid";
 
 interface GlobalMediaPlayerProps {}
 
@@ -193,7 +194,7 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
       return;
     }
 
-    const sessionId = crypto.randomUUID();
+    const sessionId = uuidv4();
     setPlaySessionId(sessionId);
 
     // Report playback start

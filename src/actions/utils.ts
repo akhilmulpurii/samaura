@@ -9,6 +9,7 @@ import axios from "axios";
 import { AUTH_COOKIE_NAME, createJellyfinInstance } from "../lib/utils";
 import Cookies from "js-cookie";
 import { JellyfinUserWithToken } from "../types/jellyfin";
+import { v4 as uuidv4 } from "uuid";
 
 // Helper function to get auth data from cookies
 export function getAuthData(): {
@@ -121,7 +122,7 @@ export async function getStreamUrl(
   const { serverUrl, user } = await getAuthData();
 
   // Generate a unique PlaySessionId for each stream request
-  const playSessionId = crypto.randomUUID();
+  const playSessionId = uuidv4();
 
   let url = `${serverUrl}/Videos/${itemId}/master.m3u8?api_key=${user.AccessToken}&MediaSourceId=${mediaSourceId}&PlaySessionId=${playSessionId}&VideoCodec=h264,hevc&AudioCodec=aac,mp3&TranscodingProfile=Default&AudioStreamIndex=${audioStreamIndex}`;
 

@@ -8,6 +8,7 @@ import {
   SERVER_COOKIE_NAME,
 } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const secure = import.meta.env.VITE_SECURE_COOKIE
   ? import.meta.env.VITE_SECURE_COOKIE.toLowerCase() === "true"
@@ -18,7 +19,7 @@ type JellyfinUserWithToken = UserDto & { AccessToken?: string };
 
 // Function to get or create a unique device ID for fallback auth
 function getDeviceId(): string {
-  return crypto.randomUUID();
+  return uuidv4();
 }
 
 export function setServerUrl(url: string) {

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Jellyfin } from "@jellyfin/sdk";
+import { v4 as uuidv4 } from "uuid";
 
 export const AUTH_COOKIE_NAME = "jellyfin-auth";
 export const SERVER_COOKIE_NAME = "jellyfin-server-url";
@@ -11,7 +12,7 @@ export function cn(...inputs: ClassValue[]) {
 
 // Function to get or create a unique device ID
 function getDeviceId(): string {
-  return crypto.randomUUID();
+  return uuidv4();
 }
 
 // Create Jellyfin SDK instance with unique device ID

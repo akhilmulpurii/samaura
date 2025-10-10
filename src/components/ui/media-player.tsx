@@ -54,6 +54,7 @@ import {
 } from "media-chrome/dist/react/media-store.js";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const ROOT_NAME = "MediaPlayer";
 const SEEK_NAME = "MediaPlayerSeek";
@@ -3178,7 +3179,7 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
                     <DropdownMenuItem
                       key={`${subtitleTrack.kind}-${subtitleTrack.label}-${
                         subtitleTrack.language
-                      }-${crypto.randomUUID()}`}
+                      }-${uuidv4()}`}
                       className="justify-between"
                       onSelect={() => onShowSubtitleTrack(subtitleTrack)}
                     >
