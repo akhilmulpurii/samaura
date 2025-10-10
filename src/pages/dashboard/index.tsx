@@ -17,10 +17,12 @@ import { logColumns } from "../../components/logs/columns";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LogFile } from "@jellyfin/sdk/lib/generated-client/models";
+import LoadingSpinner from "../../components/loading-spinner";
 
 export default function DashboardPage() {
   const [scheduledTasks, setScheduledTasks] = useState<any[]>([]);
   const [logs, setLogs] = useState<LogFile[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,11 +38,15 @@ export default function DashboardPage() {
           // use React Router navigate
           navigate("/login");
         }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
   }, []);
+
+  if (loading) return <LoadingSpinner />;
 
   // Filter to show only running tasks
   const runningTasks = scheduledTasks.filter(
