@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  samaura:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MODE=production
+      - VITE_SERVER_BASE_URL=${VITE_SERVER_BASE_URL}
+      - VITE_SECURE_COOKIE=${VITE_SECURE_COOKIE:-true}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
