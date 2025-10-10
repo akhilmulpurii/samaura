@@ -4,12 +4,12 @@ import { MediaSourceInfo } from "@/types/jellyfin";
 // Fullscreen state
 export const isFullscreenAtom = atom(false);
 
-// Electron state
-export const isElectronMacAtom = atom(false);
-export const isElectronFullscreenAtom = atom((get) => {
-  const isElectronMac = get(isElectronMacAtom);
+// Tauri state
+export const isTauriMacAtom = atom(false);
+export const isTauriFullscreenAtom = atom((get) => {
+  const isTauriMac = get(isTauriMacAtom);
   const isFullscreen = get(isFullscreenAtom);
-  return isElectronMac && isFullscreen;
+  return isTauriMac && isFullscreen;
 });
 
 // Media Player state

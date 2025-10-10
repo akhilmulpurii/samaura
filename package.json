@@ -2,17 +2,13 @@
   "name": "samaura",
   "author": "SAM <akhilfilms02@gmail.com> (https://github.com/akhilmulpurii)",
   "version": "0.1.0",
-  "description": "A Modern, Streamlined Jellyfin Client built with Next.js and Electron.",
+  "description": "A Modern, Streamlined Jellyfin Client built with Next.js and Tauri.",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "electron": "NODE_ENV=development concurrently \"npm run dev\" \"wait-on http://localhost:3000 && electron electron/main.js\"",
-    "electron-dev": "NODE_ENV=development electron electron/main.js",
-    "electron-pack": "electron-builder",
-    "electron-build-mac": "electron-builder --mac"
+    "lint": "next lint"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -76,10 +72,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.2.0",
-    "electron": "^37.2.4",
-    "electron-builder": "^26.0.12",
-    "electron-reload": "^2.0.0-alpha.1",
-    "electron-serve": "^2.1.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
     "eslint-plugin-jest": "^29.0.1",
@@ -87,40 +79,5 @@
     "tw-animate-css": "^1.3.5",
     "typescript": "^5",
     "wait-on": "^8.0.4"
-  },
-  "main": "electron/main.js",
-  "homepage": "./",
-  "build": {
-    "appId": "com.samaura.app",
-    "productName": "samaura",
-    "directories": {
-      "output": "dist",
-      "buildResources": "build"
-    },
-    "files": [
-      "electron/**/*",
-      "package.json"
-    ],
-    "mac": {
-      "icon": "public/logo/desktop/samaura.png",
-      "category": "public.app-category.entertainment",
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ]
-    },
-    "win": {
-      "icon": "public/logo/desktop/samaura.png",
-      "target": "nsis"
-    },
-    "linux": {
-      "icon": "public/logo/desktop/samaura.png",
-      "target": "AppImage"
-    }
   }
 }

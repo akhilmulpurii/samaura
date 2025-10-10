@@ -62,11 +62,11 @@ interface JellyfinLibrary {
 }
 
 export function AppSidebar({
-  isElectronMac,
-  isElectronFullscreen,
+  isTauriMac,
+  isTauriFullscreen,
 }: {
-  isElectronMac: boolean;
-  isElectronFullscreen: boolean;
+  isTauriMac: boolean;
+  isTauriFullscreen: boolean;
 }) {
   const { setTheme } = useTheme();
   const { videoBitrate, setVideoBitrate } = useSettings();
@@ -135,9 +135,7 @@ export function AppSidebar({
     <Sidebar
       variant="floating"
       collapsible="icon"
-      className={`${
-        isElectronMac && !isElectronFullscreen ? "pt-10" : ""
-      } z-20`}
+      className={`${isTauriMac && !isTauriFullscreen ? "pt-10" : ""} z-20`}
     >
       <SidebarHeader>
         <SidebarMenu>

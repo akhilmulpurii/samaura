@@ -5,8 +5,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { GlobalMediaPlayer } from "@/components/global-media-player";
 import {
-  isElectronMacAtom,
-  isElectronFullscreenAtom,
+  isTauriMacAtom,
+  isTauriFullscreenAtom,
   isFullscreenAtom,
 } from "@/lib/atoms";
 import { useSettings } from "@/contexts/settings-context";
@@ -17,8 +17,8 @@ interface LayoutContentProps {
 }
 
 export function LayoutContent({ children }: LayoutContentProps) {
-  const [isElectronMac] = useAtom(isElectronMacAtom);
-  const [isElectronFullscreen] = useAtom(isElectronFullscreenAtom);
+  const [isTauriMac] = useAtom(isTauriMacAtom);
+  const [isTauriFullscreen] = useAtom(isTauriFullscreenAtom);
   const [isFullscreen] = useAtom(isFullscreenAtom);
 
   // Function to handle opening AI Ask with fullscreen exit if needed
@@ -46,12 +46,12 @@ export function LayoutContent({ children }: LayoutContentProps) {
     <div className="flex flex-col h-screen overflow-hidden">
       <SidebarProvider>
         <AppSidebar
-          isElectronMac={isElectronMac}
-          isElectronFullscreen={isElectronFullscreen}
+          isTauriMac={isTauriMac}
+          isTauriFullscreen={isTauriFullscreen}
         />
         <SidebarInset
           className={`flex-1 overflow-hidden ${
-            isElectronMac && !isElectronFullscreen ? "pl-2.5" : ""
+            isTauriMac && !isTauriFullscreen ? "pl-2.5" : ""
           }`}
         >
           <div className="flex-1 overflow-y-auto no-scrollbar">{children}</div>

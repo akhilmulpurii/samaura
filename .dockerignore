@@ -46,13 +46,6 @@ pids/
 *.seed
 *.pid.lock
 
-# Electron specific
-electron/
-*.dmg
-*.app
-*.exe
-*.AppImage
-
 # Screenshots and examples
 screenshots/
 examples/

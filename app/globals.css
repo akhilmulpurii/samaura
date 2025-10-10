@@ -50,31 +50,37 @@
   --color-color-2: var(--color-2);
   --color-color-1: var(--color-1);
   @keyframes rainbow {
-  0% {
-    background-position: 0%;
+    0% {
+      background-position: 0%;
     }
-  100% {
-    background-position: 200%;
+    100% {
+      background-position: 200%;
     }
   }
-  --animate-aurora: aurora 8s ease-in-out infinite alternate
-;
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
   @keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}
-  25% {
-    background-position: 50% 100%;
-    transform: rotate(5deg) scale(1.1);}
-  50% {
-    background-position: 100% 50%;
-    transform: rotate(-3deg) scale(0.95);}
-  75% {
-    background-position: 50% 0%;
-    transform: rotate(3deg) scale(1.05);}
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}}}
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
+}
 
 :root {
   --radius: 0.65rem;
@@ -116,10 +122,10 @@
   --color-5: oklch(90.7% 0.231 133);
 
   /* Jellyfin colors - light mode */
-  --jellyfin-purple: #AA5CC3;
-  --jellyfin-blue: #00A4DC;
-  --jellyfin-purple-alt: #7C3AED;
-  --jellyfin-blue-alt: #0EA5E9;
+  --jellyfin-purple: #aa5cc3;
+  --jellyfin-blue: #00a4dc;
+  --jellyfin-purple-alt: #7c3aed;
+  --jellyfin-blue-alt: #0ea5e9;
 }
 
 .dark {
@@ -161,37 +167,40 @@
   --color-5: oklch(90.7% 0.231 133);
 
   /* Jellyfin colors - dark mode (lighter versions) */
-  --jellyfin-purple: #C084FC;
-  --jellyfin-blue: #60A5FA;
-  --jellyfin-purple-alt: #A78BFA;
-  --jellyfin-blue-alt: #38BDF8;
+  --jellyfin-purple: #c084fc;
+  --jellyfin-blue: #60a5fa;
+  --jellyfin-purple-alt: #a78bfa;
+  --jellyfin-blue-alt: #38bdf8;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   /* Prevent white flash during theme transitions */
   html {
-    background-color: oklch(0.141 0.005 285.823); /* dark background as fallback */
+    background-color: oklch(
+      0.141 0.005 285.823
+    ); /* dark background as fallback */
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
   }
 
   /* macOS Electron traffic light buttons spacing */
-  .electron-mac {
-    padding-top: 28px; /* Height of traffic light buttons area */
-  }
+  /* Height of traffic light buttons area */
+  /* .electron-mac {
+    padding-top: 28px; 
+  } */
 
   /* Alternative approach using CSS environment variables (if supported) */
-  @supports (padding-top: env(titlebar-area-height)) {
+  /* @supports (padding-top: env(titlebar-area-height)) {
     .electron-mac {
       padding-top: env(titlebar-area-height);
     }
-  }
+  } */
 
   /* Custom scrollbar styles */
   ::-webkit-scrollbar {
