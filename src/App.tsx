@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+import Login from "./pages/login";
+import BoxsetPage from "./pages/boxset/[id]";
+import EpisodePage from "./pages/episode/[id]";
+import LiveTVIndex from "./pages/livetv";
+import LiveTVPage from "./pages/livetv/[id]";
+import LibraryPage from "./pages/library/[id]";
+import MoviePage from "./pages/movie/[id]";
+import PersonPage from "./pages/person/[id]";
+import SearchPage from "./pages/search";
+import SeasonPage from "./pages/season/[id]";
+import SeriesPage from "./pages/series/[id]";
+import SettingsPage from "./pages/settings";
+import Main from "./pages/main";
+// import Main Layout
+
+import MainLayout from "./components/main-layout";
+import { AuthProvider } from "./contexts/AuthContext";
+import { SettingsProvider } from "./contexts/settings-context";
+import { ThemeProvider } from "next-themes";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <AuthProvider>
+        <SettingsProvider>
+          <Router>
+            <Routes>
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Main />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/boxset/:id" element={<BoxsetPage />} />
+                <Route path="/episode/:id" element={<EpisodePage />} />
+                <Route path="/library/:id" element={<LibraryPage />} />
+                <Route path="/livetv" element={<LiveTVIndex />} />
+                <Route path="/livetv/:id" element={<LiveTVPage />} />
+                <Route path="/movie/:id" element={<MoviePage />} />
+                <Route path="/person/:id" element={<PersonPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/season/:id" element={<SeasonPage />} />
+                <Route path="/series/:id" element={<SeriesPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </Router>
+        </SettingsProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,6 +11,11 @@ export default defineConfig({
   server: {
     strictPort: true,
     port: 3000,
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
   // to access the Tauri environment variables set by the CLI with information about the current target
   envPrefix: [
@@ -26,6 +33,7 @@ export default defineConfig({
         plugins: [["babel-plugin-react-compiler"]],
       },
     }),
+    tailwindcss(),
   ],
   build: {
     target: process.env.TAURI_PLATFORM
