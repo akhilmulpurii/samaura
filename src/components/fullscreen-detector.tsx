@@ -12,17 +12,23 @@ export function FullscreenDetector() {
 
   useEffect(() => {
     const checkTauriMac = async () => {
-      // Check if running in Tauri
-      const runningInTauri = isTauri();
+      try {
+        // Check if running in Tauri
+        const runningInTauri = isTauri();
 
-      // Check OS platform
-      const appPlatform = platform(); // Returns "darwin" on macOS
-      const isMac = appPlatform.toLowerCase() === "darwin";
+        if (runningInTauri) {
+          // Check OS platform
+          const appPlatform = platform(); // Returns "darwin" on macOS
+          const isMac = appPlatform.toLowerCase() === "darwin";
 
-      console.log("runningInTauri:", runningInTauri);
-      console.log("isMac:", isMac);
+          console.log("runningInTauri:", runningInTauri);
+          console.log("isMac:", isMac);
 
-      setIsTauriMac(runningInTauri && isMac);
+          setIsTauriMac(runningInTauri && isMac);
+        }
+      } catch (error) {
+        console.log("Probably not a Tauri environment", error);
+      }
     };
 
     checkTauriMac();
