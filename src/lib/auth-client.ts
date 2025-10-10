@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { JellyfinUserWithToken } from '@/types/jellyfin';
+import { JellyfinUserWithToken } from "../types/jellyfin";
 
 interface AuthResponse {
   success: boolean;
@@ -11,12 +11,16 @@ interface AuthResponse {
 
 // Client-side authentication utilities
 export class AuthClient {
-  static async login(serverUrl: string, username: string, password: string): Promise<AuthResponse> {
+  static async login(
+    serverUrl: string,
+    username: string,
+    password: string
+  ): Promise<AuthResponse> {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           serverUrl,
@@ -36,34 +40,36 @@ export class AuthClient {
       } else {
         return {
           success: false,
-          error: data.error || 'Login failed',
+          error: data.error || "Login failed",
         };
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return {
         success: false,
-        error: 'Network error occurred',
+        error: "Network error occurred",
       };
     }
   }
 
   static async logout(): Promise<void> {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
+      await fetch("/api/auth/logout", {
+        method: "POST",
       });
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   }
 
-  static async checkServerHealth(url: string): Promise<{ success: boolean; finalUrl?: string; error?: string }> {
+  static async checkServerHealth(
+    url: string
+  ): Promise<{ success: boolean; finalUrl?: string; error?: string }> {
     try {
-      const response = await fetch('/api/auth/check-server', {
-        method: 'POST',
+      const response = await fetch("/api/auth/check-server", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ url }),
       });
@@ -71,10 +77,10 @@ export class AuthClient {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Server health check error:', error);
+      console.error("Server health check error:", error);
       return {
         success: false,
-        error: 'Network error occurred',
+        error: "Network error occurred",
       };
     }
   }
