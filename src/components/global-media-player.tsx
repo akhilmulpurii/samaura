@@ -57,6 +57,7 @@ import {
 } from "../lib/device-detection";
 import { fetchIntroOutro } from "../actions/media";
 import { decode } from "blurhash";
+import DisplayEndTime from "./display-end-time";
 
 interface GlobalMediaPlayerProps {}
 
@@ -804,18 +805,12 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
 
                   {/* End time display */}
                   {mediaDetails?.RunTimeTicks && (
-                    <motion.div
-                      className="text-sm text-white/70 ml-4 whitespace-nowrap"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      Ends at{" "}
-                      {formatEndTime(
+                    <DisplayEndTime
+                      time={formatEndTime(
                         0,
                         ticksToSeconds(mediaDetails.RunTimeTicks)
                       )}
-                    </motion.div>
+                    />
                   )}
                 </div>
 
@@ -934,9 +929,7 @@ export function GlobalMediaPlayer({}: GlobalMediaPlayerProps) {
 
               {/* End time display */}
               {duration > 0 && currentTime >= 0 && (
-                <div className="text-sm text-white/70 ml-4 whitespace-nowrap">
-                  Ends at {formatEndTime(currentTime, duration)}
-                </div>
+                <DisplayEndTime time={formatEndTime(currentTime, duration)} />
               )}
             </div>
 

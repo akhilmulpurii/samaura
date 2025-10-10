@@ -5,7 +5,9 @@
   SAMAURA
   <br>
 </h1>
-<h4 align="center">A Modern, Streamlined Jellyfin Client built with Next.js</h4>
+<h4 align="center">A Modern, Streamlined Jellyfin Client built with Vite+React+Tauri</h4>
+
+https://github.com/user-attachments/assets/07fb5741-1edf-4655-9001-6df3e2b1c72b
 
 <div align="center">
   <table>
@@ -15,6 +17,9 @@
       </td>
       <td align="center">
         <img src="screenshots/series/dark.png" alt="Dark Theme" width="500">
+      </td>
+      <td align="center">
+        <img src="screenshots/series/collections.png" alt="Dark Theme" width="500">
       </td>
     </tr>
   </table>
