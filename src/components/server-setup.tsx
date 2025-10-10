@@ -117,8 +117,6 @@ export function ServerSetup({ onNext }: ServerSetupProps) {
     }
   };
 
-  console.log("VALUE:", SERVER_BASE_URL);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative w-full">
       <VibrantAuroraBackground amplitude={0.8} blend={0.4} />
