@@ -77,7 +77,7 @@ export function CastScrollArea({ people, mediaId }: CastScrollAreaProps) {
           </Button>
         </div>
       </div>
-      <ScrollArea className="w-full pb-6">
+      <ScrollArea className="w-full pb-6 h-fit">
         <div className="flex gap-4 w-max" ref={scrollRef}>
           {people.map((person, index) => (
             <CastCrewCard person={person} />

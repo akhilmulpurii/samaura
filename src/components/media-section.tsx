@@ -94,7 +94,7 @@ export function MediaSection({
       </div>
       {mediaItems.length > 0 ? (
         <ScrollArea className="w-full pb-6">
-          <div className="flex gap-4 w-max" ref={scrollRef}>
+          <div className="flex gap-4 w-max h-fit" ref={scrollRef}>
             {mediaItems.map((item) => (
               <div key={item.Id} className="flex-shrink-0">
                 {item?.Type === "TvChannel" ? (
