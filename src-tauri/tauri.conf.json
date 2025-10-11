@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "yarn build",
+    "beforeBuildCommand": "rm -rf ./src-tauri/target/* && yarn build",
     "beforeDevCommand": "yarn dev",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000"
@@ -53,7 +53,7 @@
         "resizable": true,
         "title": "samaura",
         "width": 800,
-        "useHttpsScheme": true
+        "useHttpsScheme": false
       }
     ],
     "security": {
