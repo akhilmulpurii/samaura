@@ -78,6 +78,7 @@ export function AppSidebar({
   const [libraries, setLibraries] = useState<BaseItemDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const { setOpenMobile } = useSidebar();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,7 +175,7 @@ export function AppSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/">
+                  <Link to="/" onClick={() => setOpenMobile(false)}>
                     <Home className="h-4 w-4" />
                     <span>Home</span>
                   </Link>
@@ -193,11 +194,12 @@ export function AppSidebar({
                     <DropdownMenuContent
                       side="right"
                       align="start"
-                      className="min-w-56 rounded-lg"
+                      className="min-w-56 rounded-lg z-[10000000001]"
                     >
                       {libraries.map((library) => (
                         <DropdownMenuItem asChild key={library.Id}>
                           <Link
+                            onClick={() => setOpenMobile(false)}
                             to={
                               library.CollectionType !== "livetv"
                                 ? `/library/${library.Id}`
@@ -216,7 +218,7 @@ export function AppSidebar({
               </DropdownMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link to="/dashboard">
+                  <Link to="/dashboard" onClick={() => setOpenMobile(false)}>
                     <Settings2 className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
