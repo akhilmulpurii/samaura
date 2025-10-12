@@ -53,7 +53,7 @@
         "resizable": true,
         "title": "samaura",
         "width": 800,
-        "useHttpsScheme": false
+        "useHttpsScheme": true
       }
     ],
     "security": {
