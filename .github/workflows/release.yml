@@ -201,6 +201,13 @@ jobs:
       - docker-image
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository for gh release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit_sha }}
+          fetch-depth: 0
+          path: repo
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -208,11 +215,15 @@ jobs:
           pattern: "*"
           merge-multiple: true
 
-      - name: Checkout repository for gh release
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.prepare.outputs.commit_sha }}
-          fetch-depth: 0
+      - name: List downloaded artifacts
+        run: |
+          set -euo pipefail
+          if [ -d artifacts ]; then
+            echo "Collected artifacts:"
+            ls -R artifacts
+          else
+            echo "No artifacts downloaded." && exit 1
+          fi
 
       - name: Assemble release payload
         shell: bash
@@ -220,13 +231,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
-          if [ ! -d artifacts ]; then
-            echo "No artifacts directory found."
-            exit 1
-          fi
-
           mkdir -p release
-
           found=false
           while IFS= read -r -d '' file; do
             base=$(basename "$file")
@@ -240,13 +245,14 @@ jobs:
           fi
 
       - name: Publish GitHub release
+        working-directory: repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.prepare.outputs.version }}
           TAG: ${{ needs.prepare.outputs.tag }}
         run: |
           set -euo pipefail
-          mapfile -d '' files < <(find release -type f -print0)
+          mapfile -d '' files < <(find ../release -type f -print0)
 
           if [ ${#files[@]} -eq 0 ]; then
             echo "Release directory is empty; aborting."
