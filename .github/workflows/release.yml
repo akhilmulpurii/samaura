@@ -61,9 +61,9 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          # - os: ubuntu-22.04
-          #   id: linux-x86_64
-          #   label: Linux x86_64
+          - os: ubuntu-22.04
+            id: linux-x86_64
+            label: Linux x86_64
           # - os: windows-latest
           #   id: windows-x86_64
           #   label: Windows x86_64
