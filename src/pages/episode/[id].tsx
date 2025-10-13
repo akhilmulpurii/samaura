@@ -40,7 +40,9 @@ export default async function Episode() {
 
         setEpisode(ep);
 
-        setServerUrl(getServerUrl());
+        const su = await getServerUrl();
+
+        setServerUrl(su);
 
         const [pi, bi, li, simItems] = await Promise.all([
           getImageUrl(id, "Primary"),

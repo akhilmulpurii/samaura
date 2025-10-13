@@ -3,13 +3,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Skeleton } from "../components/ui/skeleton";
 import { Search, Film, Tv, Calendar, PlayCircle, Star } from "lucide-react";
-import {
-  searchItems,
-  getImageUrl,
-  getUser,
-  logout,
-  getServerUrl,
-} from "../actions";
+import { searchItems } from "../actions";
 import { Badge } from "./ui/badge";
 import { SearchSuggestionItem } from "./search-suggestion-item";
 import { TextShimmerWave } from "./ui/text-shimmer-wave";

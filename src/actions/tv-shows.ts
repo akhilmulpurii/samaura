@@ -9,29 +9,27 @@ import { ItemSortBy } from "@jellyfin/sdk/lib/generated-client/models/item-sort-
 import { SortOrder } from "@jellyfin/sdk/lib/generated-client/models/sort-order";
 import { ItemFilter } from "@jellyfin/sdk/lib/generated-client/models/item-filter";
 import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
-import { AUTH_COOKIE_NAME, createJellyfinInstance } from "../lib/utils";
+import { createJellyfinInstance } from "../lib/utils";
 import { JellyfinUserWithToken } from "../types/jellyfin";
-import Cookies from "js-cookie";
+import { StoreAuthData } from "./store/store-auth-data";
 
 // Type aliases for easier use
 type JellyfinItem = BaseItemDto;
 
-// Helper function to get auth data from cookies
-export function getAuthData(): {
+export async function getAuthData(): Promise<{
   serverUrl: string;
   user: JellyfinUserWithToken;
-} {
-  const authData = Cookies.get(AUTH_COOKIE_NAME);
-
-  if (!authData) {
-    throw new Error("Not authenticated");
-  }
-
+}> {
   try {
-    const parsed = JSON.parse(authData);
+    const authData = await StoreAuthData.get();
+
+    if (!authData) {
+      throw new Error("Not authenticated");
+    }
+
     return {
-      serverUrl: parsed.serverUrl,
-      user: parsed.user,
+      serverUrl: authData.serverUrl,
+      user: authData.user,
     };
   } catch {
     throw new Error("Invalid auth data");
