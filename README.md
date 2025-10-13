@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <a href="https://github.com/akhilmulpurii/samaura"><img src="https://github.com/akhilmulpurii/samaura/blob/main/src/assets/logo/icons/Samaura_Default.png?raw=true" alt="SAMAURA" width="200"></a>
+    <a href="https://github.com/akhilmulpurii/samaura"><img src="https://github.com/akhilmulpurii/samaura/blob/main/src/assets/logo/samaura.png?raw=true" alt="SAMAURA" width="200"></a>
   <br>
   SAMAURA
   <br>
