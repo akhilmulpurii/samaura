@@ -139,15 +139,18 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           mkdir -p bundle-artifacts
-          mapfile -t files < <(find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.pkg" -o -name "*.tar.gz" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.zip" \))
-          if [ "${#files[@]}" -eq 0 ]; then
+          found=false
+          while IFS= read -r -d '' file; do
+            cp "$file" "bundle-artifacts/$(basename "$file")"
+            found=true
+          done < <(find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.pkg" -o -name "*.tar.gz" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.zip" \) -print0)
+
+          if [ "$found" = false ]; then
             echo "No distributable bundle files found. Available bundle tree:"
             find src-tauri/target/release/bundle -maxdepth 3 -print
             exit 1
           fi
-          for file in "${files[@]}"; do
-            cp "$file" "bundle-artifacts/$(basename "$file")"
-          done
+
           ls -lh bundle-artifacts
 
       - name: Collect bundle artifacts (Windows)
