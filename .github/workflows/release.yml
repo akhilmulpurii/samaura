@@ -55,7 +55,7 @@ jobs:
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build-tauri:
-    if: ${{ needs.prepare.result == 'success' && (github.event_name != 'push' }}
+    if: ${{ needs.prepare.result == 'success' }}
     needs: prepare
     strategy:
       fail-fast: false
