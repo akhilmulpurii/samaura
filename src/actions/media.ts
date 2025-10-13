@@ -8,13 +8,10 @@ import { getItemsApi } from "@jellyfin/sdk/lib/utils/api/items-api";
 import { getLiveTvApi } from "@jellyfin/sdk/lib/utils/api/live-tv-api";
 import { getLibraryApi } from "@jellyfin/sdk/lib/utils/api/library-api";
 import { getGenresApi } from "@jellyfin/sdk/lib/utils/api/genres-api";
-import {
-  AUTH_COOKIE_NAME,
-  createJellyfinInstance,
-  SERVER_COOKIE_NAME,
-} from "../lib/utils";
-import Cookies from "js-cookie";
+import { createJellyfinInstance } from "../lib/utils";
 import { JellyfinUserWithToken } from "../types/jellyfin";
+import { StoreAuthData } from "./store/store-auth-data";
+import { StoreServerURL } from "./store/store-server-url";
 
 // Type aliases for easier use
 type JellyfinItem = BaseItemDto;
@@ -34,21 +31,20 @@ interface MediaSegmentsResponse {
   StartIndex: number;
 }
 
-export function getAuthData(): {
+export async function getAuthData(): Promise<{
   serverUrl: string;
   user: JellyfinUserWithToken;
-} {
-  const authData = Cookies.get(AUTH_COOKIE_NAME);
-
-  if (!authData) {
-    throw new Error("Not authenticated");
-  }
-
+}> {
   try {
-    const parsed = JSON.parse(authData);
+    const authData = await StoreAuthData.get();
+
+    if (!authData) {
+      throw new Error("Not authenticated");
+    }
+
     return {
-      serverUrl: parsed.serverUrl,
-      user: parsed.user,
+      serverUrl: authData.serverUrl,
+      user: authData.user,
     };
   } catch {
     throw new Error("Invalid auth data");
@@ -66,8 +62,7 @@ function isAuthError(error: any): boolean {
 
 // Server Action to clear invalid auth data
 export async function clearAuthData() {
-  Cookies.remove(AUTH_COOKIE_NAME, { path: "/" });
-  Cookies.remove(SERVER_COOKIE_NAME, { path: "/" });
+  await Promise.all([StoreAuthData.remove(), StoreServerURL.remove()]);
 }
 
 export async function fetchMovies(

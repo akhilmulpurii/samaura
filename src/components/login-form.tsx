@@ -11,7 +11,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { ThemeToggle } from "../components/ui/theme-toggle";
 import { VibrantAuroraBackground } from "../components/vibrant-aurora-background";
-import { authenticateUser, getServerUrl } from "../actions";
+import { authenticateUser } from "../actions";
 import { Loader2, User, ArrowLeft } from "lucide-react";
 
 interface LoginFormProps {

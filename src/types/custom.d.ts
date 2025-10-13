@@ -11,7 +11,7 @@ interface ViteTypeOptions {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_SECURE_COOKIE: string = false;
+  readonly VITE_SECURE_COOKIE: string; // remove = false
   readonly VITE_SERVER_BASE_URL: string;
   readonly MODE: "development" | "production";
 

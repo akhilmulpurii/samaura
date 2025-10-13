@@ -9,7 +9,6 @@ services:
       - NODE_ENV=production
       - MODE=production
       - VITE_SERVER_BASE_URL=${VITE_SERVER_BASE_URL}
-      - VITE_SECURE_COOKIE=${VITE_SECURE_COOKIE:-true}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]

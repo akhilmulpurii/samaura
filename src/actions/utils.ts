@@ -6,27 +6,25 @@ import {
   LogFile,
 } from "@jellyfin/sdk/lib/generated-client/models";
 import axios from "axios";
-import { AUTH_COOKIE_NAME, createJellyfinInstance } from "../lib/utils";
-import Cookies from "js-cookie";
+import { createJellyfinInstance } from "../lib/utils";
 import { JellyfinUserWithToken } from "../types/jellyfin";
 import { v4 as uuidv4 } from "uuid";
+import { StoreAuthData } from "./store/store-auth-data";
 
-// Helper function to get auth data from cookies
-export function getAuthData(): {
+export async function getAuthData(): Promise<{
   serverUrl: string;
   user: JellyfinUserWithToken;
-} {
-  const authData = Cookies.get(AUTH_COOKIE_NAME);
-
-  if (!authData) {
-    throw new Error("Not authenticated");
-  }
-
+}> {
   try {
-    const parsed = JSON.parse(authData);
+    const authData = await StoreAuthData.get();
+
+    if (!authData) {
+      throw new Error("Not authenticated");
+    }
+
     return {
-      serverUrl: parsed.serverUrl,
-      user: parsed.user,
+      serverUrl: authData.serverUrl,
+      user: authData.user,
     };
   } catch {
     throw new Error("Invalid auth data");

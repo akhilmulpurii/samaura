@@ -8,10 +8,6 @@ interface AuthContextType {
   timestamp: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (serverUrl: string, user: JellyfinUserWithToken) => void;
-  logout: () => void;
-  refreshAuthData: () => void;
-  isTokenExpired: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

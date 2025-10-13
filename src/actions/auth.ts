@@ -1,18 +1,11 @@
-import Cookies from "js-cookie";
 import { SystemApi } from "@jellyfin/sdk/lib/generated-client/api/system-api";
 import { Configuration } from "@jellyfin/sdk/lib/generated-client/configuration";
 import type { UserDto } from "@jellyfin/sdk/lib/generated-client/models/user-dto";
-import {
-  AUTH_COOKIE_NAME,
-  createJellyfinInstance,
-  SERVER_COOKIE_NAME,
-} from "../lib/utils";
+import { createJellyfinInstance } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-
-const secure = import.meta.env.VITE_SECURE_COOKIE
-  ? import.meta.env.VITE_SECURE_COOKIE.toLowerCase() === "true"
-  : import.meta.env.MODE === "production";
+import { StoreServerURL } from "./store/store-server-url";
+import { StoreAuthData } from "./store/store-auth-data";
 
 // Type aliases for easier use
 type JellyfinUserWithToken = UserDto & { AccessToken?: string };
@@ -22,17 +15,12 @@ function getDeviceId(): string {
   return uuidv4();
 }
 
-export function setServerUrl(url: string) {
-  Cookies.set(SERVER_COOKIE_NAME, url, {
-    expires: 7, // 7 days
-    sameSite: "Lax",
-    secure, // set true if your app runs on https
-    path: "/",
-  });
+export async function setServerUrl(url: string) {
+  await StoreServerURL.set(url);
 }
 
-export function getServerUrl(): string | null {
-  return Cookies.get(SERVER_COOKIE_NAME) || null;
+export async function getServerUrl(): Promise<string | null> {
+  return await StoreServerURL.get();
 }
 
 export async function checkServerHealth(
@@ -123,21 +111,12 @@ export async function authenticateUser(
     if (result.AccessToken) {
       const userWithToken = { ...result.User, AccessToken: result.AccessToken };
 
-      // Save auth data to cookies
-      const value = JSON.stringify({
+      await StoreAuthData.set({
         serverUrl,
         user: userWithToken,
         timestamp: Date.now(), // track token age
       });
 
-      Cookies.set(AUTH_COOKIE_NAME, value, {
-        expires: 30,
-        sameSite: "Lax",
-        secure: false, // set true if running on HTTPS
-        path: "/",
-      });
-
-      console.log("Authentication data saved to cookies successfully");
       return true;
     } else {
       console.error("Authentication response missing AccessToken");
@@ -199,24 +178,12 @@ export async function authenticateUser(
             AccessToken: result.AccessToken,
           };
 
-          // Save auth data to cookies
-          // Save auth data to cookies
-          const value = JSON.stringify({
+          await StoreAuthData.set({
             serverUrl,
             user: userWithToken,
             timestamp: Date.now(), // track token age
           });
 
-          Cookies.set(AUTH_COOKIE_NAME, value, {
-            expires: 30,
-            sameSite: "Lax",
-            secure: false, // set true if running on HTTPS
-            path: "/",
-          });
-
-          console.log(
-            "Alternative authentication data saved to cookies successfully"
-          );
           return true;
         }
       } else {
@@ -235,22 +202,16 @@ export async function authenticateUser(
 }
 
 export function logout(navigate: ReturnType<typeof useNavigate>) {
-  // Delete cookies
-  Cookies.remove(AUTH_COOKIE_NAME, { path: "/" });
-  Cookies.remove(SERVER_COOKIE_NAME, { path: "/" });
-
-  // Redirect to login page
-  navigate("/login");
+  Promise.all([StoreAuthData.remove(), StoreServerURL.remove()]).then(() => {
+    navigate("/login");
+  });
 }
 
-export function getUser(): JellyfinUserWithToken | null {
-  const authData = Cookies.get(AUTH_COOKIE_NAME);
-
-  if (!authData) return null;
-
+export async function getUser(): Promise<JellyfinUserWithToken | null> {
   try {
-    const parsed = JSON.parse(authData);
-    return parsed.user || null;
+    const authData = await StoreAuthData.get();
+    if (!authData) return null;
+    return authData.user || null;
   } catch {
     return null;
   }
