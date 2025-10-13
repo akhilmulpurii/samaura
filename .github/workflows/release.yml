@@ -55,7 +55,7 @@ jobs:
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build-tauri:
-    if: ${{ needs.prepare.result == 'success' }}
+    if: ${{ needs.prepare.result == 'success' && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[docker-only]')) }}
     needs: prepare
     strategy:
       fail-fast: false
@@ -194,7 +194,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: ${{ needs.prepare.result == 'success' }}
+    if: ${{ needs.prepare.result == 'success' && (needs.build-tauri.result == 'success' || needs.build-tauri.result == 'skipped') && needs.docker-image.result == 'success' }}
     needs:
       - prepare
       - build-tauri
@@ -220,14 +220,23 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           set -euo pipefail
+          if [ ! -d artifacts ]; then
+            echo "No artifacts directory found."
+            exit 1
+          fi
+
           mkdir -p release
-          if compgen -G "artifacts/*" > /dev/null; then
-            for file in artifacts/*; do
-              base=$(basename "$file")
-              cp "$file" "release/$base"
-            done
-          else
-            echo "No artifacts downloaded; skipping copy step."
+
+          found=false
+          while IFS= read -r -d '' file; do
+            base=$(basename "$file")
+            cp "$file" "release/$base"
+            found=true
+          done < <(find artifacts -type f -print0)
+
+          if [ "$found" = false ]; then
+            echo "No artifact files were found to include in the release."
+            exit 1
           fi
 
       - name: Publish GitHub release
@@ -236,6 +245,15 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
           TAG: ${{ needs.prepare.outputs.tag }}
         run: |
-          gh release create "$TAG" release/* \
+          set -euo pipefail
+          mapfile -d '' files < <(find release -type f -print0)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "Release directory is empty; aborting."
+            exit 1
+          fi
+
+          gh release create "$TAG" \
             --title "samaura v${VERSION}" \
-            --generate-notes
+            --generate-notes \
+            "${files[@]}"
