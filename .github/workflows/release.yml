@@ -55,7 +55,7 @@ jobs:
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build-tauri:
-    if: ${{ needs.prepare.result == 'success' && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[docker-only]')) }}
+    if: ${{ needs.prepare.result == 'success' && (github.event_name != 'push' }}
     needs: prepare
     strategy:
       fail-fast: false
@@ -64,15 +64,15 @@ jobs:
           - os: ubuntu-22.04
             id: linux-x86_64
             label: Linux x86_64
-          # - os: windows-latest
-          #   id: windows-x86_64
-          #   label: Windows x86_64
-          # - os: macos-13
-          #   id: macos-intel
-          #   label: macOS Intel
-          # - os: macos-14
-          #   id: macos-arm64
-          #   label: macOS Apple Silicon
+          - os: windows-latest
+            id: windows-x86_64
+            label: Windows x86_64
+          - os: macos-13
+            id: macos-intel
+            label: macOS Intel
+          - os: macos-14
+            id: macos-arm64
+            label: macOS Apple Silicon
     runs-on: ${{ matrix.platform.os }}
     name: Build Tauri (${{ matrix.platform.label }})
     env:
@@ -85,87 +85,87 @@ jobs:
           ref: ${{ needs.prepare.outputs.commit_sha }}
           fetch-depth: 0
 
-      # - name: Setup Node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20
-      #     cache: yarn
-      #     cache-dependency-path: yarn.lock
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      # - name: Install system dependencies (Linux)
-      #   if: matrix.platform.os == 'ubuntu-22.04'
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     sudo apt-get update
-      #     sudo apt-get install -y \
-      #       build-essential \
-      #       curl \
-      #       libgtk-3-dev \
-      #       libssl-dev \
-      #       libwebkit2gtk-4.0-dev \
-      #       libjavascriptcoregtk-4.0-dev \
-      #       libsoup-3.0-dev \
-      #       libayatana-appindicator3-dev \
-      #       librsvg2-dev \
-      #       pkg-config \
-      #       wget
-      #     if apt-cache show libwebkit2gtk-4.1-dev >/dev/null 2>&1; then
-      #       sudo apt-get install -y \
-      #         libwebkit2gtk-4.1-dev \
-      #         libjavascriptcoregtk-4.1-dev
-      #     fi
+      - name: Install system dependencies (Linux)
+        if: matrix.platform.os == 'ubuntu-22.04'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            libgtk-3-dev \
+            libssl-dev \
+            libwebkit2gtk-4.0-dev \
+            libjavascriptcoregtk-4.0-dev \
+            libsoup-3.0-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            pkg-config \
+            wget
+          if apt-cache show libwebkit2gtk-4.1-dev >/dev/null 2>&1; then
+            sudo apt-get install -y \
+              libwebkit2gtk-4.1-dev \
+              libjavascriptcoregtk-4.1-dev
+          fi
 
-      # - name: Install dependencies
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     corepack enable
-      #     corepack prepare yarn@1.22.19 --activate
-      #     yarn install --frozen-lockfile
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare yarn@1.22.19 --activate
+          yarn install --frozen-lockfile
 
-      # - name: Run Tauri build
-      #   id: build
-      #   uses: tauri-apps/tauri-action@v0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     TAURI_BUILD_VERSION: ${{ env.VERSION }}
-      #     TAURI_APP_VERSION: ${{ env.VERSION }}
+      - name: Run Tauri build
+        id: build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_BUILD_VERSION: ${{ env.VERSION }}
+          TAURI_APP_VERSION: ${{ env.VERSION }}
 
-      # - name: Package bundle (Unix)
-      #   if: runner.os != 'Windows'
-      #   id: package-unix
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     OUTPUT="samaura-${{ matrix.platform.id }}-${VERSION}.tar.gz"
-      #     tar -czf "$OUTPUT" -C src-tauri/target/release bundle
-      #     echo "file=$OUTPUT" >> "$GITHUB_OUTPUT"
+      - name: Package bundle (Unix)
+        if: runner.os != 'Windows'
+        id: package-unix
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUTPUT="samaura-${{ matrix.platform.id }}-${VERSION}.tar.gz"
+          tar -czf "$OUTPUT" -C src-tauri/target/release bundle
+          echo "file=$OUTPUT" >> "$GITHUB_OUTPUT"
 
-      # - name: Package bundle (Windows)
-      #   if: runner.os == 'Windows'
-      #   id: package-windows
-      #   shell: pwsh
-      #   run: |
-      #     $output = "samaura-${{ matrix.platform.id }}-$env:VERSION.zip"
-      #     Compress-Archive -Path "src-tauri/target/release/bundle/*" -DestinationPath $output -Force
-      #     echo "file=$output" >> $env:GITHUB_OUTPUT
+      - name: Package bundle (Windows)
+        if: runner.os == 'Windows'
+        id: package-windows
+        shell: pwsh
+        run: |
+          $output = "samaura-${{ matrix.platform.id }}-$env:VERSION.zip"
+          Compress-Archive -Path "src-tauri/target/release/bundle/*" -DestinationPath $output -Force
+          echo "file=$output" >> $env:GITHUB_OUTPUT
 
-      # - name: Upload bundle artifact (Unix)
-      #   if: runner.os != 'Windows'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ steps.package-unix.outputs.file }}
-      #     path: ${{ steps.package-unix.outputs.file }}
-      #     if-no-files-found: error
+      - name: Upload bundle artifact (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package-unix.outputs.file }}
+          path: ${{ steps.package-unix.outputs.file }}
+          if-no-files-found: error
 
-      # - name: Upload bundle artifact (Windows)
-      #   if: runner.os == 'Windows'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ steps.package-windows.outputs.file }}
-      #     path: ${{ steps.package-windows.outputs.file }}
-      #     if-no-files-found: error
+      - name: Upload bundle artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package-windows.outputs.file }}
+          path: ${{ steps.package-windows.outputs.file }}
+          if-no-files-found: error
 
   docker-image:
     if: ${{ needs.prepare.result == 'success' }}
