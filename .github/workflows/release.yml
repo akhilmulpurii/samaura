@@ -206,6 +206,12 @@ jobs:
         with:
           path: artifacts
 
+      - name: Checkout repository for gh release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit_sha }}
+          fetch-depth: 0
+
       - name: Assemble release payload
         shell: bash
         env:
