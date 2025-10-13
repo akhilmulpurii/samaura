@@ -42,7 +42,7 @@
   },
   "productName": "samaura",
   "mainBinaryName": "samaura",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "identifier": "com.samura.client",
   "plugins": {},
   "app": {
