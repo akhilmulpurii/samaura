@@ -12,6 +12,8 @@ import { createJellyfinInstance } from "../lib/utils";
 import { JellyfinUserWithToken } from "../types/jellyfin";
 import { StoreAuthData } from "./store/store-auth-data";
 import { StoreServerURL } from "./store/store-server-url";
+import { LibraryApi } from "@jellyfin/sdk/lib/generated-client/api/library-api";
+import { ThemeMediaResult } from "@jellyfin/sdk/lib/generated-client/models";
 
 // Type aliases for easier use
 type JellyfinItem = BaseItemDto;
@@ -188,6 +190,39 @@ export async function fetchTVShows(
     }
 
     return [];
+  }
+}
+
+export async function fetchThemeSong(
+  mediaItemId: string
+): Promise<ThemeMediaResult | null> {
+  try {
+    const { serverUrl, user } = await getAuthData();
+    if (!user.AccessToken) throw new Error("No access token found");
+
+    const jellyfinInstance = createJellyfinInstance();
+    const api = jellyfinInstance.createApi(serverUrl);
+    api.accessToken = user.AccessToken;
+
+    const libraryApi = new LibraryApi(api.configuration);
+    const { data } = await libraryApi.getThemeSongs({
+      userId: user.Id,
+      itemId: mediaItemId,
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch media details:", error);
+
+    // If it's an authentication error, throw an error with a special flag
+    if (isAuthError(error)) {
+      const authError = new Error(
+        "Authentication expired. Please sign in again."
+      );
+      (authError as any).isAuthError = true;
+      throw authError;
+    }
+
+    return null;
   }
 }
 

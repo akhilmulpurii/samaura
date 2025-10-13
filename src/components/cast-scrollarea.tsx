@@ -80,7 +80,7 @@ export function CastScrollArea({ people, mediaId }: CastScrollAreaProps) {
       <ScrollArea className="w-full pb-6 h-fit">
         <div className="flex gap-4 w-max" ref={scrollRef}>
           {people.map((person, index) => (
-            <CastCrewCard person={person} />
+            <CastCrewCard key={index} person={person} />
           ))}
         </div>
         <ScrollBar orientation="horizontal" />

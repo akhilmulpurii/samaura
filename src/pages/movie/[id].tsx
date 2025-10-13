@@ -22,6 +22,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../../components/loading-spinner";
+import { fetchThemeSong } from "../../actions/media";
+import _ from "lodash";
 
 export default function Movie() {
   const { id } = useParams<{ id: string }>();
@@ -43,6 +45,20 @@ export default function Movie() {
 
         if (!movieDetails) {
           return;
+        }
+
+        const themeSongData = await fetchThemeSong(id);
+        if (
+          themeSongData?.TotalRecordCount &&
+          themeSongData?.TotalRecordCount > 0
+        ) {
+          const themeSong = _.find(themeSongData.Items, {
+            ExtraType: "ThemeSong",
+          });
+          if (themeSong) {
+            // Handle Background Music Player
+            console.log(themeSong);
+          }
         }
 
         setMovie(movieDetails);
