@@ -132,39 +132,46 @@ jobs:
           TAURI_BUILD_VERSION: ${{ env.VERSION }}
           TAURI_APP_VERSION: ${{ env.VERSION }}
 
-      - name: Package bundle (Unix)
+      - name: Collect bundle artifacts (Unix)
         if: runner.os != 'Windows'
-        id: package-unix
         shell: bash
         run: |
           set -euo pipefail
-          OUTPUT="samaura-${{ matrix.platform.id }}-${VERSION}.tar.gz"
-          tar -czf "$OUTPUT" -C src-tauri/target/release bundle
-          echo "file=$OUTPUT" >> "$GITHUB_OUTPUT"
+          shopt -s nullglob
+          mkdir -p bundle-artifacts
+          mapfile -t files < <(find src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.pkg" -o -name "*.tar.gz" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.zip" \))
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No distributable bundle files found. Available bundle tree:"
+            find src-tauri/target/release/bundle -maxdepth 3 -print
+            exit 1
+          fi
+          for file in "${files[@]}"; do
+            cp "$file" "bundle-artifacts/$(basename "$file")"
+          done
+          ls -lh bundle-artifacts
 
-      - name: Package bundle (Windows)
+      - name: Collect bundle artifacts (Windows)
         if: runner.os == 'Windows'
-        id: package-windows
         shell: pwsh
         run: |
-          $output = "samaura-${{ matrix.platform.id }}-$env:VERSION.zip"
-          Compress-Archive -Path "src-tauri/target/release/bundle/*" -DestinationPath $output -Force
-          echo "file=$output" >> $env:GITHUB_OUTPUT
+          $bundleRoot = "src-tauri/target/release/bundle"
+          $dest = "bundle-artifacts"
+          New-Item -ItemType Directory -Path $dest -Force | Out-Null
+          $files = Get-ChildItem -Path $bundleRoot -Recurse -Include *.exe,*.msi,*.zip -File
+          if (-not $files) {
+            Get-ChildItem -Path $bundleRoot -Recurse
+            throw "No distributable bundle files found."
+          }
+          foreach ($file in $files) {
+            Copy-Item $file.FullName (Join-Path $dest $file.Name) -Force
+          }
+          Get-ChildItem $dest | Format-Table Name,Length
 
-      - name: Upload bundle artifact (Unix)
-        if: runner.os != 'Windows'
+      - name: Upload bundle artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.package-unix.outputs.file }}
-          path: ${{ steps.package-unix.outputs.file }}
-          if-no-files-found: error
-
-      - name: Upload bundle artifact (Windows)
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.package-windows.outputs.file }}
-          path: ${{ steps.package-windows.outputs.file }}
+          name: samaura-${{ matrix.platform.id }}-${{ needs.prepare.outputs.version }}
+          path: bundle-artifacts/*
           if-no-files-found: error
 
   docker-image:
