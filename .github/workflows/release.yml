@@ -205,6 +205,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: "*"
+          merge-multiple: true
 
       - name: Checkout repository for gh release
         uses: actions/checkout@v4
@@ -219,10 +221,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release
-          find artifacts -mindepth 2 -maxdepth 2 -type f -print0 | while IFS= read -r -d '' file; do
-            base=$(basename "$file")
-            cp "$file" "release/$base"
-          done
+          if compgen -G "artifacts/*" > /dev/null; then
+            for file in artifacts/*; do
+              base=$(basename "$file")
+              cp "$file" "release/$base"
+            done
+          else
+            echo "No artifacts downloaded; skipping copy step."
+          fi
 
       - name: Publish GitHub release
         env:
