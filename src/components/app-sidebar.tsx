@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom"; // for React Router
 // @ts-ignore
-import Logo from "../assets/logo/samura.png";
+import Logo from "../assets/logo/samaura.png";
 
 import { useTheme } from "next-themes";
 import {
