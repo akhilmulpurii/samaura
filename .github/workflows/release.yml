@@ -1,0 +1,205 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prepare:
+    if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+      tag: ${{ steps.bump.outputs.tag }}
+      commit_sha: ${{ steps.commit.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          VERSION=$(node scripts/bump-version.mjs)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag release
+        id: commit
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No version changes detected; aborting release."
+            exit 1
+          fi
+
+          git add package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock
+          git commit -m "chore: release ${TAG} [skip release]"
+          git tag "${TAG}"
+          git push origin HEAD:${GITHUB_REF_NAME}
+          git push origin "${TAG}"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  build-tauri:
+    if: ${{ needs.prepare.result == 'success' }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: ubuntu-22.04
+            id: linux-x86_64
+            label: Linux x86_64
+          - os: windows-latest
+            id: windows-x86_64
+            label: Windows x86_64
+          - os: macos-13
+            id: macos-intel
+            label: macOS Intel
+          - os: macos-14
+            id: macos-arm64
+            label: macOS Apple Silicon
+    runs-on: ${{ matrix.platform.os }}
+    name: Build Tauri (${{ matrix.platform.label }})
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare yarn@1.22.19 --activate
+          yarn install --frozen-lockfile
+
+      - name: Run Tauri build
+        id: build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_BUILD_VERSION: ${{ env.VERSION }}
+          TAURI_APP_VERSION: ${{ env.VERSION }}
+
+      - name: Package bundle (Unix)
+        if: runner.os != 'Windows'
+        id: package-unix
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUTPUT="samaura-${{ matrix.platform.id }}-${VERSION}.tar.gz"
+          tar -czf "$OUTPUT" -C src-tauri/target/release bundle
+          echo "file=$OUTPUT" >> "$GITHUB_OUTPUT"
+
+      - name: Package bundle (Windows)
+        if: runner.os == 'Windows'
+        id: package-windows
+        shell: pwsh
+        run: |
+          $output = "samaura-${{ matrix.platform.id }}-$env:VERSION.zip"
+          Compress-Archive -Path "src-tauri/target/release/bundle/*" -DestinationPath $output -Force
+          echo "file=$output" >> $env:GITHUB_OUTPUT
+
+      - name: Upload bundle artifact (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package-unix.outputs.file }}
+          path: ${{ steps.package-unix.outputs.file }}
+          if-no-files-found: error
+
+      - name: Upload bundle artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package-windows.outputs.file }}
+          path: ${{ steps.package-windows.outputs.file }}
+          if-no-files-found: error
+
+  docker-image:
+    if: ${{ needs.prepare.result == 'success' }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit_sha }}
+          fetch-depth: 0
+
+      - name: Build Docker image
+        run: |
+          docker build -t samaura-web:${VERSION} .
+          mkdir -p build
+          docker save samaura-web:${VERSION} | gzip > "build/samaura-web-${VERSION}.tar.gz"
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samaura-web-${{ env.VERSION }}.tar.gz
+          path: build/samaura-web-${{ env.VERSION }}.tar.gz
+          if-no-files-found: error
+
+  release:
+    if: ${{ needs.prepare.result == 'success' }}
+    needs:
+      - prepare
+      - build-tauri
+      - docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Assemble release payload
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          find artifacts -mindepth 2 -maxdepth 2 -type f -print0 | while IFS= read -r -d '' file; do
+            base=$(basename "$file")
+            cp "$file" "release/$base"
+          done
+
+      - name: Publish GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          gh release create "$TAG" release/* \
+            --title "samaura v${VERSION}" \
+            --generate-notes

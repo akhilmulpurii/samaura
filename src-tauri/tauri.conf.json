@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "rm -rf ./src-tauri/target/* && yarn build",
-    "beforeDevCommand": "rm -rf ./src-tauri/target/* && yarn dev",
+    "beforeBuildCommand": "node ./scripts/clean-tauri-target.mjs && yarn build",
+    "beforeDevCommand": "node ./scripts/clean-tauri-target.mjs && yarn dev",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000"
   },
