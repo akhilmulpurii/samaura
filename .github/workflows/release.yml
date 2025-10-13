@@ -104,11 +104,17 @@ jobs:
             libgtk-3-dev \
             libssl-dev \
             libwebkit2gtk-4.0-dev \
+            libjavascriptcoregtk-4.0-dev \
             libsoup-3.0-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
             pkg-config \
             wget
+          if apt-cache show libwebkit2gtk-4.1-dev >/dev/null 2>&1; then
+            sudo apt-get install -y \
+              libwebkit2gtk-4.1-dev \
+              libjavascriptcoregtk-4.1-dev
+          fi
 
       - name: Install dependencies
         shell: bash
