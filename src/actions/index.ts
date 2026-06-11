@@ -119,6 +119,15 @@ export {
   updateTaskTriggers,
 } from "./scheduled-tasks";
 export { fetchActivityLogEntries } from "./activity-log";
+export {
+  getInstalledSubtitles,
+  uploadSubtitleToJellyfin,
+  deleteJellyfinSubtitle,
+} from "./subtitles-search";
+export type {
+  InstalledSubtitle,
+  UploadSubtitleInput,
+} from "./subtitles-search";
 
 // Types
 export type {

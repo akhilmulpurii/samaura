@@ -18,6 +18,7 @@ import {
 } from "../components/ui/dialog";
 import { MediaInfoDialog } from "../components/media-info-dialog";
 import { ImageEditorDialog } from "../components/image-editor-dialog";
+import { SubtitleManagerDialog } from "../components/subtitles/subtitle-manager-dialog";
 import {
   Info,
   Download,
@@ -543,6 +544,12 @@ export function MediaActions({
               <MediaInfoDialog mediaSource={selectedVersion} />
             </DialogContent>
           </Dialog>
+
+          <SubtitleManagerDialog
+            media={media}
+            mediaSource={selectedVersion}
+            triggerClassName="flex-1 sm:flex-none sm:h-9 sm:w-9 sm:px-0 sm:gap-0"
+          />
 
           {userPolicy?.IsAdministrator && (
             <ImageEditorDialog
