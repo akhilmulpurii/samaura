@@ -6,8 +6,8 @@ import {
 } from "./server-actions";
 
 export class StoreAuthData {
-  static async set(value: AuthData) {
-    return setAuthData(value);
+  static async set(value: AuthData, options?: { persistent?: boolean }) {
+    return setAuthData(value, options);
   }
 
   static async get(): Promise<AuthData | null> {

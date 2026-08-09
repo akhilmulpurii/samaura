@@ -7,6 +7,7 @@ import { AuthenticationResult } from "@jellyfin/sdk/lib/generated-client/models"
 export interface LoginPreferences {
   username?: string;
   serverUrl?: string;
+  rememberMe?: boolean;
 }
 
 export interface AuthData {
@@ -26,11 +27,32 @@ export type SeerrAuthData =
       password: string;
     };
 
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+
+function getPersistentCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: COOKIE_MAX_AGE_SECONDS,
+  };
+}
+
+function getSessionCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  };
+}
+
 // --- StoreServerURL actions ---
 const SERVER_URL_KEY = "jellyfin-server-url";
 
 export async function setServerUrl(value: string) {
-  (await cookies()).set(SERVER_URL_KEY, value);
+  (await cookies()).set(SERVER_URL_KEY, value, getPersistentCookieOptions());
 }
 
 export async function getServerUrl(): Promise<string | null> {
@@ -47,7 +69,11 @@ export async function removeServerUrl() {
 const PREF_KEY = "login-preferences";
 
 export async function setLoginPreferences(value: LoginPreferences) {
-  (await cookies()).set(PREF_KEY, JSON.stringify(value));
+  (await cookies()).set(
+    PREF_KEY,
+    JSON.stringify(value),
+    getPersistentCookieOptions(),
+  );
 }
 
 export async function getLoginPreferences(): Promise<LoginPreferences | null> {
@@ -68,8 +94,15 @@ export async function removeLoginPreferences() {
 // --- StoreAuthData actions ---
 const AUTH_DATA_KEY = "jellyfin-auth";
 
-export async function setAuthData(value: AuthData) {
-  (await cookies()).set(AUTH_DATA_KEY, JSON.stringify(value));
+export async function setAuthData(
+  value: AuthData,
+  options?: { persistent?: boolean },
+) {
+  const cookieOptions = options?.persistent
+    ? getPersistentCookieOptions()
+    : getSessionCookieOptions();
+
+  (await cookies()).set(AUTH_DATA_KEY, JSON.stringify(value), cookieOptions);
 }
 
 export async function getAuthData(): Promise<AuthData | null> {
@@ -93,16 +126,32 @@ export async function executeClearAuthDataAction(
   preservePrefs: boolean = true,
 ) {
   const cookieStore = await cookies();
-  
+
   if (preservePrefs) {
     try {
+      let existingPrefs: LoginPreferences = {};
+      const existingPrefsCookie = cookieStore.get(PREF_KEY);
+      if (existingPrefsCookie?.value) {
+        try {
+          existingPrefs = JSON.parse(
+            existingPrefsCookie.value,
+          ) as LoginPreferences;
+        } catch {
+          existingPrefs = {};
+        }
+      }
+
       const val = cookieStore.get(AUTH_DATA_KEY);
       if (val && val.value) {
         const parsed = JSON.parse(val.value) as AuthData;
         const userName =
           (parsed?.user as any)?.Name || parsed?.user?.User?.Name;
         if (userName) {
-          cookieStore.set(PREF_KEY, JSON.stringify({ username: userName }));
+          cookieStore.set(
+            PREF_KEY,
+            JSON.stringify({ ...existingPrefs, username: userName }),
+            getPersistentCookieOptions(),
+          );
         }
       }
     } catch (err) {
@@ -118,8 +167,15 @@ export async function executeClearAuthDataAction(
 // --- StoreSeerrData actions ---
 const SEERR_DATA_KEY = "seerr-config";
 
-export async function setSeerrData(value: SeerrAuthData) {
-  (await cookies()).set(SEERR_DATA_KEY, JSON.stringify(value));
+export async function setSeerrData(
+  value: SeerrAuthData,
+  options?: { persistent?: boolean },
+) {
+  const cookieOptions = options?.persistent
+    ? getPersistentCookieOptions()
+    : getSessionCookieOptions();
+
+  (await cookies()).set(SEERR_DATA_KEY, JSON.stringify(value), cookieOptions);
 }
 
 export async function getSeerrData(): Promise<SeerrAuthData | null> {

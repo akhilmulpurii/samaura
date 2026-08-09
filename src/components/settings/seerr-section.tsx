@@ -33,6 +33,7 @@ import {
   TabsTrigger,
 } from "@/src/components/ui/tabs";
 import { StoreSeerrData } from "@/src/actions/store/store-seerr-data";
+import { StoreLoginPreferences } from "@/src/actions/store/store-login-preferences";
 import { type SeerrAuthType } from "@/src/actions/store/server-actions";
 import { toast } from "sonner";
 import { testSeerrConnection } from "@/src/actions";
@@ -75,21 +76,27 @@ export default function SeerrSection() {
     loadSettings();
   }, [loadSettings]);
 
+  const getRememberMePreference = useCallback(async () => {
+    const prefs = await StoreLoginPreferences.get();
+    return prefs?.rememberMe === true;
+  }, []);
+
   const handleSave = async () => {
     try {
+      const rememberMe = await getRememberMePreference();
       if (authType === "api-key") {
         await StoreSeerrData.set({
           authType: "api-key",
           serverUrl,
           apiKey,
-        });
+        }, { persistent: rememberMe });
       } else {
         await StoreSeerrData.set({
           authType,
           serverUrl,
           username,
           password,
-        });
+        }, { persistent: rememberMe });
       }
       toast.success("Seerr settings saved successfully");
     } catch (error) {

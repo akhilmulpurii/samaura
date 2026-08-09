@@ -111,6 +111,7 @@ export async function checkServerHealth(
 export async function authenticateUser(
   username: string,
   password: string,
+  rememberMe: boolean = false,
 ): Promise<boolean> {
   const serverUrl = await getServerUrl();
   if (!serverUrl) {
@@ -145,11 +146,14 @@ export async function authenticateUser(
     if (result.AccessToken) {
       const userWithToken = { ...result.User, AccessToken: result.AccessToken };
 
-      await StoreAuthData.set({
-        serverUrl,
-        user: userWithToken,
-        timestamp: Date.now(), // track token age
-      });
+      await StoreAuthData.set(
+        {
+          serverUrl,
+          user: userWithToken,
+          timestamp: Date.now(), // track token age
+        },
+        { persistent: rememberMe },
+      );
 
       return true;
     } else {
@@ -212,11 +216,14 @@ export async function authenticateUser(
             AccessToken: result.AccessToken,
           };
 
-          await StoreAuthData.set({
-            serverUrl,
-            user: userWithToken,
-            timestamp: Date.now(), // track token age
-          });
+          await StoreAuthData.set(
+            {
+              serverUrl,
+              user: userWithToken,
+              timestamp: Date.now(), // track token age
+            },
+            { persistent: rememberMe },
+          );
 
           return true;
         }
@@ -392,6 +399,7 @@ export async function getQuickConnectStatus(
 
 export async function authenticateWithQuickConnect(
   secret: string,
+  rememberMe: boolean = false,
 ): Promise<boolean> {
   const serverUrl = await getServerUrl();
   if (!serverUrl || !secret) return false;
@@ -424,11 +432,14 @@ export async function authenticateWithQuickConnect(
         AccessToken: result.AccessToken,
       };
 
-      await StoreAuthData.set({
-        serverUrl,
-        user: userWithToken,
-        timestamp: Date.now(),
-      });
+      await StoreAuthData.set(
+        {
+          serverUrl,
+          user: userWithToken,
+          timestamp: Date.now(),
+        },
+        { persistent: rememberMe },
+      );
 
       return true;
     }

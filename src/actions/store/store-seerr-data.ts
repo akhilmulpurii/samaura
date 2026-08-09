@@ -6,8 +6,8 @@ import {
 } from "./server-actions";
 
 export class StoreSeerrData {
-  static async set(value: SeerrAuthData) {
-    return setSeerrData(value);
+  static async set(value: SeerrAuthData, options?: { persistent?: boolean }) {
+    return setSeerrData(value, options);
   }
 
   static async get(): Promise<SeerrAuthData | null> {
