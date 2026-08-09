@@ -476,11 +476,7 @@ export async function logout(
     }
   } catch {}
 
-  await Promise.all([
-    StoreAuthData.remove(),
-    StoreServerURL.remove(),
-    StoreSeerrData.remove(),
-  ]);
+  await Promise.all([StoreAuthData.remove(), StoreSeerrData.remove()]);
 
   navigate("/login");
 }

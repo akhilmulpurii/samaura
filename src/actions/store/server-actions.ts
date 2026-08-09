@@ -85,7 +85,11 @@ export async function setServerUrl(
 export async function getServerUrl(): Promise<string | null> {
   const cookieStore = await cookies();
   const val = cookieStore.get(SERVER_URL_KEY);
-  return val ? val.value : null;
+  if (val?.value) {
+    return val.value;
+  }
+  const envDefault = process.env.DEFAULT_SERVER_URL?.trim();
+  return envDefault || null;
 }
 
 export async function removeServerUrl() {
@@ -148,11 +152,10 @@ export async function getAuthData(): Promise<AuthData | null> {
 
   try {
     const parsed = JSON.parse(val.value) as AuthData;
-    // Non-remembered sessions carry an idle-expiry. If the expiry has passed, clean up
-    // both the auth cookie and the server URL
+    // Non-remembered sessions carry an idle-expiry. If the expiry has passed,
+    // clear only auth so server URL preference can still be reused.
     if (parsed.expiresAt && Date.now() > parsed.expiresAt) {
       cookieStore.delete(AUTH_DATA_KEY);
-      cookieStore.delete(SERVER_URL_KEY);
       return null;
     }
     return parsed;

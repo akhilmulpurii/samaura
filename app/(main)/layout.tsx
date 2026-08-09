@@ -25,9 +25,16 @@ export default function MainLayout({
   }, [isLoading, isAuthenticated, router]);
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      refreshAuthCookieTTL().catch(() => {});
-    }
+    if (isLoading || !isAuthenticated) return;
+
+    // Call once immediately, then every hour to slide the idle-expiry window
+    refreshAuthCookieTTL().catch(() => {});
+
+    const interval = setInterval(
+      () => refreshAuthCookieTTL().catch(() => {}),
+      60 * 60 * 1000, // 1 hour
+    );
+    return () => clearInterval(interval);
   }, [isLoading, isAuthenticated]);
 
   return (

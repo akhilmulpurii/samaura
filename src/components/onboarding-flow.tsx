@@ -28,8 +28,6 @@ export function OnboardingFlow() {
       if (authenticated && serverUrl) {
         router.push("/");
         return;
-      } else if (serverUrl && !authenticated) {
-        setCurrentStep("login");
       } else {
         setCurrentStep("server");
       }
