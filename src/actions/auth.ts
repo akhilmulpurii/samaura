@@ -111,6 +111,7 @@ export async function checkServerHealth(
 export async function authenticateUser(
   username: string,
   password: string,
+  rememberMe: boolean = false,
 ): Promise<boolean> {
   const serverUrl = await getServerUrl();
   if (!serverUrl) {
@@ -145,11 +146,17 @@ export async function authenticateUser(
     if (result.AccessToken) {
       const userWithToken = { ...result.User, AccessToken: result.AccessToken };
 
-      await StoreAuthData.set({
-        serverUrl,
-        user: userWithToken,
-        timestamp: Date.now(), // track token age
-      });
+      await StoreAuthData.set(
+        {
+          serverUrl,
+          user: userWithToken,
+          timestamp: Date.now(), // track token age
+        },
+        { persistent: rememberMe },
+      );
+
+      // Keep the server URL cookie lifetime aligned with the session choice.
+      await StoreServerURL.set(serverUrl, { persistent: rememberMe });
 
       return true;
     } else {
@@ -212,11 +219,17 @@ export async function authenticateUser(
             AccessToken: result.AccessToken,
           };
 
-          await StoreAuthData.set({
-            serverUrl,
-            user: userWithToken,
-            timestamp: Date.now(), // track token age
-          });
+          await StoreAuthData.set(
+            {
+              serverUrl,
+              user: userWithToken,
+              timestamp: Date.now(), // track token age
+            },
+            { persistent: rememberMe },
+          );
+
+          // Keep the server URL cookie lifetime aligned with the session choice.
+          await StoreServerURL.set(serverUrl, { persistent: rememberMe });
 
           return true;
         }
@@ -392,6 +405,7 @@ export async function getQuickConnectStatus(
 
 export async function authenticateWithQuickConnect(
   secret: string,
+  rememberMe: boolean = false,
 ): Promise<boolean> {
   const serverUrl = await getServerUrl();
   if (!serverUrl || !secret) return false;
@@ -424,11 +438,17 @@ export async function authenticateWithQuickConnect(
         AccessToken: result.AccessToken,
       };
 
-      await StoreAuthData.set({
-        serverUrl,
-        user: userWithToken,
-        timestamp: Date.now(),
-      });
+      await StoreAuthData.set(
+        {
+          serverUrl,
+          user: userWithToken,
+          timestamp: Date.now(),
+        },
+        { persistent: rememberMe },
+      );
+
+      // Keep the server URL cookie lifetime aligned with the session choice.
+      await StoreServerURL.set(serverUrl, { persistent: rememberMe });
 
       return true;
     }
@@ -440,14 +460,25 @@ export async function authenticateWithQuickConnect(
   }
 }
 
-export function logout(navigate: (redirectPath: string) => void) {
-  Promise.all([
-    StoreAuthData.remove(),
-    StoreServerURL.remove(),
-    StoreSeerrData.remove(),
-  ]).then(() => {
-    navigate("/login");
-  });
+export async function logout(
+  navigate: (redirectPath: string) => void,
+): Promise<void> {
+  // Non-blocking server-side token revocation to keep jellyfin sessions clean.
+  try {
+    const authData = await StoreAuthData.get();
+    if (authData?.serverUrl && (authData.user as any)?.AccessToken) {
+      await fetch(`${authData.serverUrl}/Sessions/Logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `MediaBrowser Token="${(authData.user as any).AccessToken}"`,
+        },
+      });
+    }
+  } catch {}
+
+  await Promise.all([StoreAuthData.remove(), StoreSeerrData.remove()]);
+
+  navigate("/login");
 }
 
 export async function getUser(): Promise<JellyfinUserWithToken | null> {

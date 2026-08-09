@@ -1,8 +1,8 @@
 import { getServerUrl, setServerUrl, removeServerUrl } from "./server-actions";
 
 export class StoreServerURL {
-  static async set(value: string) {
-    return setServerUrl(value);
+  static async set(value: string, options?: { persistent?: boolean }) {
+    return setServerUrl(value, options);
   }
 
   static async get(): Promise<string | null> {

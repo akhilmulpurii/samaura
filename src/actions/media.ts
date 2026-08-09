@@ -15,7 +15,6 @@ import { getTvShowsApi } from "@jellyfin/sdk/lib/utils/api/tv-shows-api";
 import { createJellyfinInstance } from "../lib/utils";
 import { JellyfinUserWithToken } from "../types/jellyfin";
 import { StoreAuthData } from "./store/store-auth-data";
-import { StoreServerURL } from "./store/store-server-url";
 import { LibraryOptions } from "@jellyfin/sdk/lib/generated-client/models";
 
 // Type aliases for easier use

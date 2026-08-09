@@ -11,9 +11,9 @@ import {
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { VibrantAuroraBackground } from "../components/vibrant-aurora-background";
-import { checkServerHealth, setServerUrl } from "../actions";
+import { checkServerHealth, getServerUrl, setServerUrl } from "../actions";
+import { StoreLoginPreferences } from "../actions/store/store-login-preferences";
 import { Loader2, Server, CheckCircle, Globe, Shield } from "lucide-react";
-import axios from "axios";
 
 interface ServerSetupProps {
   onNext: () => void;
@@ -38,10 +38,18 @@ export function ServerSetup({ onNext }: ServerSetupProps) {
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const { data } = await axios("/api/config");
-        if (data.defaultServerUrl) setUrl(data.defaultServerUrl);
+        // Server URL resolution is cookie-first with env-default fallback.
+        const resolvedServerUrl = await getServerUrl();
+        if (resolvedServerUrl) {
+          setUrl(resolvedServerUrl);
+        } else {
+          // Fall back to saved login preferences so returning users see the
+          // server URL they previously connected to.
+          const prefs = await StoreLoginPreferences.get();
+          if (prefs?.serverUrl) setUrl(prefs.serverUrl);
+        }
       } catch (err) {
-        console.error("Failed to fetch runtime config", err);
+        console.error("Failed to resolve server URL", err);
       } finally {
         setUrlLoading(false);
       }

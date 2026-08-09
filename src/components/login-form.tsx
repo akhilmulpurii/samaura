@@ -69,6 +69,7 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
     null,
   );
   const [quickConnectLoading, setQuickConnectLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const pollTimerRef = useRef<number | null>(null);
   const lastSecretRef = useRef<string | null>(null);
@@ -81,6 +82,19 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
     }
   }, []);
 
+  const persistLoginPreferences = useCallback(async () => {
+    try {
+      const serverUrl = await getServerUrl();
+      await StoreLoginPreferences.set({
+        username: username.trim() || undefined,
+        serverUrl: serverUrl || undefined,
+        rememberMe,
+      });
+    } catch (error) {
+      console.warn("Failed to persist login preferences:", error);
+    }
+  }, [rememberMe, username]);
+
   useEffect(() => {
     isMountedRef.current = true;
     (async () => {
@@ -88,6 +102,9 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
       if (!isMountedRef.current) return;
       if (prefs?.username) {
         setUsername(prefs.username);
+      }
+      if (typeof prefs?.rememberMe === "boolean") {
+        setRememberMe(prefs.rememberMe);
       }
     })();
     return () => {
@@ -148,10 +165,11 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
 
       if (status.Authenticated) {
         stopQuickConnectPolling();
-        const success = await authenticateWithQuickConnect(nextSecret);
+        const success = await authenticateWithQuickConnect(nextSecret, rememberMe);
         if (!isMountedRef.current) return;
 
         if (success) {
+          await persistLoginPreferences();
           onSuccess();
           return;
         }
@@ -170,7 +188,7 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
           : "We couldn't check the Quick Connect status. Please try again.",
       );
     }
-  }, [onSuccess, stopQuickConnectPolling]);
+  }, [onSuccess, persistLoginPreferences, rememberMe, stopQuickConnectPolling]);
 
   const startQuickConnect = useCallback(async () => {
     if (quickConnectLoading) return;
@@ -255,8 +273,9 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
     setError("");
 
     try {
-      const success = await authenticateUser(username, password);
+      const success = await authenticateUser(username, password, rememberMe);
       if (success) {
+        await persistLoginPreferences();
         onSuccess();
       } else {
         setError("Invalid username or password. Please try again.");
@@ -370,6 +389,20 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
                   />
                 </div>
 
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="remember-me"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  />
+                  <label
+                    htmlFor="remember-me"
+                    className="text-sm text-muted-foreground"
+                  >
+                    Keep me signed in on this device
+                  </label>
+                </div>
+
                 {error && (
                   <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     <AlertCircle className="mt-0.5 h-4 w-4" />
@@ -461,6 +494,20 @@ export function LoginForm({ onSuccess, onBack }: LoginFormProps) {
                   )}
                 </div>
               )}
+
+              <div className="mt-4 flex items-center gap-2">
+                <Checkbox
+                  id="remember-me-quickconnect"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                />
+                <label
+                  htmlFor="remember-me-quickconnect"
+                  className="text-sm text-muted-foreground"
+                >
+                  Keep me signed in on this device
+                </label>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SeerrMediaItem, SeerrRequestItem } from "@/src/types/seerr-types";
+import { SeerrMediaItem } from "@/src/types/seerr-types";
 
 // Shared map to track pending logins per user/server
 // Note: In serverless environments, this map might be reset frequently.
@@ -160,7 +160,7 @@ async function hydrateSeerrItems(
       const detailResponse = await seerrFetch<any>(req, detailEndpoint);
 
       if (detailResponse.success && detailResponse.data) {
-        let merged = { ...item, ...detailResponse.data };
+        const merged = { ...item, ...detailResponse.data };
         merged.tmdbId = tmdbId;
         return merged as SeerrMediaItem;
       }
