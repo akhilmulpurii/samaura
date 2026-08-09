@@ -155,6 +155,9 @@ export async function authenticateUser(
         { persistent: rememberMe },
       );
 
+      // Keep the server URL cookie lifetime aligned with the session choice.
+      await StoreServerURL.set(serverUrl, { persistent: rememberMe });
+
       return true;
     } else {
       console.error("Authentication response missing AccessToken");
@@ -224,6 +227,9 @@ export async function authenticateUser(
             },
             { persistent: rememberMe },
           );
+
+          // Keep the server URL cookie lifetime aligned with the session choice.
+          await StoreServerURL.set(serverUrl, { persistent: rememberMe });
 
           return true;
         }
@@ -441,6 +447,9 @@ export async function authenticateWithQuickConnect(
         { persistent: rememberMe },
       );
 
+      // Keep the server URL cookie lifetime aligned with the session choice.
+      await StoreServerURL.set(serverUrl, { persistent: rememberMe });
+
       return true;
     }
 
@@ -451,14 +460,29 @@ export async function authenticateWithQuickConnect(
   }
 }
 
-export function logout(navigate: (redirectPath: string) => void) {
-  Promise.all([
+export async function logout(
+  navigate: (redirectPath: string) => void,
+): Promise<void> {
+  // Non-blocking server-side token revocation to keep jellyfin sessions clean.
+  try {
+    const authData = await StoreAuthData.get();
+    if (authData?.serverUrl && (authData.user as any)?.AccessToken) {
+      await fetch(`${authData.serverUrl}/Sessions/Logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `MediaBrowser Token="${(authData.user as any).AccessToken}"`,
+        },
+      });
+    }
+  } catch {}
+
+  await Promise.all([
     StoreAuthData.remove(),
     StoreServerURL.remove(),
     StoreSeerrData.remove(),
-  ]).then(() => {
-    navigate("/login");
-  });
+  ]);
+
+  navigate("/login");
 }
 
 export async function getUser(): Promise<JellyfinUserWithToken | null> {

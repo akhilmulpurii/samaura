@@ -12,6 +12,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { VibrantAuroraBackground } from "../components/vibrant-aurora-background";
 import { checkServerHealth, setServerUrl } from "../actions";
+import { StoreLoginPreferences } from "../actions/store/store-login-preferences";
 import { Loader2, Server, CheckCircle, Globe, Shield } from "lucide-react";
 import axios from "axios";
 
@@ -38,10 +39,23 @@ export function ServerSetup({ onNext }: ServerSetupProps) {
   useEffect(() => {
     async function fetchConfig() {
       try {
+        // 1. Try runtime config (Docker / env-based default)
         const { data } = await axios("/api/config");
-        if (data.defaultServerUrl) setUrl(data.defaultServerUrl);
+        if (data.defaultServerUrl) {
+          setUrl(data.defaultServerUrl);
+          return;
+        }
       } catch (err) {
         console.error("Failed to fetch runtime config", err);
+      }
+
+      try {
+        // 2. Fall back to saved login preferences so returning users see the
+        // server URL they previously connected to.
+        const prefs = await StoreLoginPreferences.get();
+        if (prefs?.serverUrl) setUrl(prefs.serverUrl);
+      } catch (err) {
+        console.error("Failed to read login preferences", err);
       } finally {
         setUrlLoading(false);
       }
