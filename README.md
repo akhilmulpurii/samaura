@@ -143,7 +143,7 @@ The generated assets live in `dist/`. Configure your host to fall back to `index
 
 ### Public HTTP Jellyfin Servers
 
-The hosted app at `https://aperture.vercel.app` runs over HTTPS. Modern browsers block requests from an HTTPS site to **public** HTTP endpoints for security reasons, which means remote servers such as `http://23.x.x.x:8096` cannot be reached. To use Apertúre with a public server:
+The hosted app at `https://aperture-client.vercel.app` runs over HTTPS. Modern browsers block requests from an HTTPS site to **public** HTTP endpoints for security reasons, which means remote servers such as `http://23.x.x.x:8096` cannot be reached. To use Apertúre with a public server:
 
 1. Add HTTPS to your Jellyfin instance (Let's Encrypt, Caddy/NGINX reverse proxy, Cloudflare tunnel, etc.), or
 2. Run Apertúre locally (bun dev, Docker) over HTTP.
