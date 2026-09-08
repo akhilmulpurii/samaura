@@ -59,8 +59,8 @@ export default function Home() {
             fetchNextUpItems(),
             getUserLibraries(),
           ]);
-
-        setResumeItems(resumeItemsResult);
+        console.log(resumeItemsResult);
+        setResumeItems(resumeItemsResult.filter(item => !item.IsFolder));
         setNextupItems(
           nextupItemsResult.filter(
             (item) =>
