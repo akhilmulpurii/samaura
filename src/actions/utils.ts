@@ -203,7 +203,7 @@ export async function uploadUserImage(
 export async function getDownloadUrl(itemId: string): Promise<string> {
   const { serverUrl, user } = await getAuthData();
 
-  return `${serverUrl}/Items/${itemId}/Download?api_key=${user.AccessToken}`;
+  return `${serverUrl}/Items/${itemId}/Download?api_key=${user.AccessToken}&ApiKey=${user.AccessToken}`;
 }
 
 export async function getStreamUrl(
@@ -223,7 +223,7 @@ export async function getStreamUrl(
   // Generate a unique PlaySessionId for each stream request
   const playSessionId = uuidv4();
 
-  let url = `${serverUrl}/Videos/${itemId}/master.m3u8?api_key=${user.AccessToken}&MediaSourceId=${mediaSourceId}&PlaySessionId=${playSessionId}&VideoCodec=${preferredVideoCodecs}&AudioCodec=aac&TranscodingProtocol=hls&RequireAvc=${requireAvc}&AllowVideoStreamCopy=${allowVideoStreamCopy}&AudioStreamIndex=${audioStreamIndex}&SegmentContainer=mp4&BreakOnNonKeyFrames=True&MinSegments=2&MaxFramerate=60`;
+  let url = `${serverUrl}/Videos/${itemId}/master.m3u8?api_key=${user.AccessToken}&ApiKey=${user.AccessToken}&MediaSourceId=${mediaSourceId}&PlaySessionId=${playSessionId}&VideoCodec=${preferredVideoCodecs}&AudioCodec=aac&TranscodingProtocol=hls&RequireAvc=${requireAvc}&AllowVideoStreamCopy=${allowVideoStreamCopy}&AudioStreamIndex=${audioStreamIndex}&SegmentContainer=mp4&BreakOnNonKeyFrames=True&MinSegments=2&MaxFramerate=60`;
 
   if (subtitleStreamIndex !== undefined) {
     url += `&SubtitleStreamIndex=${subtitleStreamIndex}`;
