@@ -60,7 +60,7 @@ export default function Home() {
             getUserLibraries(),
           ]);
 
-        setResumeItems(resumeItemsResult);
+        setResumeItems(resumeItemsResult.filter(item => !item.IsFolder));
         setNextupItems(
           nextupItemsResult.filter(
             (item) =>
